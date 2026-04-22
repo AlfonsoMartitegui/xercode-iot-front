@@ -1,18 +1,1 @@
-import axios from "axios";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:6701";
-
-export async function createTenant(token, data) {
-  try {
-    const response = await axios.post(`${API_URL}/tenants/`, data, {
-      headers: {
-        "accept": "application/json",
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data?.detail || "Error al crear tenant";
-  }
-}
+export { createTenant } from "./tenants";
