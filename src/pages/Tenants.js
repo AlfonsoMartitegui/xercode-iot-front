@@ -481,13 +481,13 @@ export default function Tenants({ token }) {
 
             <div className="absolute top-4 right-4 flex gap-2">
               <button
-                className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200"
+                className="text-xs font-semibold bg-blue-600 text-white px-3 py-1.5 rounded shadow-sm hover:bg-blue-700 transition"
                 onClick={() => handleEditClick(tenant.id)}
               >
                 Editar
               </button>
               <button
-                className="text-xs bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 disabled:opacity-60"
+                className="text-xs font-semibold bg-red-600 text-white px-3 py-1.5 rounded shadow-sm hover:bg-red-700 transition disabled:opacity-60"
                 onClick={() => handleDeleteClick(tenant.id)}
                 disabled={deletingTenantId === tenant.id}
               >
