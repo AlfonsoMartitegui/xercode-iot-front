@@ -17,6 +17,8 @@ const emptyForm = {
   address: "",
   redirect_url: "",
   beaver_base_url: "",
+  beaver_admin_username: "",
+  beaver_admin_password: "",
   is_active: true,
 };
 
@@ -34,10 +36,11 @@ function TenantFormModal({
   onSubmit,
   loading,
   error,
+  isEdit,
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
           onClick={onClose}
@@ -95,6 +98,39 @@ function TenantFormModal({
               onChange={(e) => onChange("beaver_base_url", e.target.value)}
               placeholder="https://..."
             />
+          </div>
+          <div className="border rounded-lg p-4 bg-gray-50">
+            <h3 className="font-semibold text-gray-800 mb-1">Configuracion Beaver</h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Datos tecnicos guardados en HUB para preparar la integracion. No ejecuta sincronizacion con Beaver.
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Usuario admin Beaver</label>
+                <input
+                  type="text"
+                  className="w-full border rounded px-3 py-2 bg-white"
+                  value={form.beaver_admin_username}
+                  onChange={(e) => onChange("beaver_admin_username", e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Password admin Beaver</label>
+                <input
+                  type="password"
+                  className="w-full border rounded px-3 py-2 bg-white"
+                  value={form.beaver_admin_password}
+                  onChange={(e) => onChange("beaver_admin_password", e.target.value)}
+                  autoComplete="new-password"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {isEdit
+                    ? "Dejar vacio para conservar la password actual."
+                    : "Se guarda cifrada en backend y no se vuelve a mostrar."}
+                </p>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -232,6 +268,16 @@ export default function Tenants({ token }) {
     setDomainModal({ open: false, tenantId: null, domainId: null });
   }
 
+  function buildTenantPayload() {
+    const payload = { ...form };
+
+    if (!payload.beaver_admin_password) {
+      delete payload.beaver_admin_password;
+    }
+
+    return payload;
+  }
+
   async function handleModalSubmit(e) {
     e.preventDefault();
     setModalError("");
@@ -243,10 +289,11 @@ export default function Tenants({ token }) {
 
     setModalLoading(true);
     try {
+      const payload = buildTenantPayload();
       if (editModal.open && editModal.tenantId) {
-        await updateTenant(token, editModal.tenantId, form);
+        await updateTenant(token, editModal.tenantId, payload);
       } else {
-        await createTenant(token, form);
+        await createTenant(token, payload);
       }
       resetModalState();
       await loadTenants();
@@ -271,6 +318,8 @@ export default function Tenants({ token }) {
         address: tenant.address || "",
         redirect_url: tenant.redirect_url || "",
         beaver_base_url: tenant.beaver_base_url || "",
+        beaver_admin_username: tenant.beaver_admin_username || "",
+        beaver_admin_password: "",
         is_active: tenant.is_active ?? true,
       });
     } catch (err) {
@@ -389,6 +438,7 @@ export default function Tenants({ token }) {
           onSubmit={handleModalSubmit}
           loading={modalLoading}
           error={modalError}
+          isEdit={false}
         />
       )}
 
@@ -402,6 +452,7 @@ export default function Tenants({ token }) {
           onSubmit={handleModalSubmit}
           loading={modalLoading}
           error={modalError}
+          isEdit
         />
       )}
 
@@ -454,6 +505,9 @@ export default function Tenants({ token }) {
             </div>
             <div className="text-sm text-gray-700 mb-3 break-all">
               <span className="font-medium">Beaver Base URL:</span> {tenant.beaver_base_url || "No definida"}
+            </div>
+            <div className="text-sm text-gray-700 mb-3 break-all">
+              <span className="font-medium">Usuario admin Beaver:</span> {tenant.beaver_admin_username || "No definido"}
             </div>
 
             <div className="text-sm text-gray-500">Dominios:</div>
