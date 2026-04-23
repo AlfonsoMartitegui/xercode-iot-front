@@ -629,6 +629,12 @@ export default function Users({ token }) {
                               {membershipSavingKey === saveKey ? "Guardando..." : "Guardar"}
                             </button>
                             <button
+                              className="text-xs font-semibold bg-amber-500 text-white px-3 py-1.5 rounded hover:bg-amber-600 transition"
+                              type="button"
+                            >
+                              Cambiar contrasena
+                            </button>
+                            <button
                               className="text-xs font-semibold bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 transition disabled:opacity-60"
                               onClick={() => handleDeleteMembership(user.id, membership.tenant_id)}
                               disabled={membershipSavingKey === deleteKey}
