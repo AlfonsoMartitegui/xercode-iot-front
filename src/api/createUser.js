@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getApiErrorMessage } from "./errors";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:6701";
 
@@ -13,6 +14,6 @@ export async function createUser(token, data) {
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data?.detail || "Error al crear usuario";
+    throw getApiErrorMessage(error, "Error al crear usuario");
   }
 }

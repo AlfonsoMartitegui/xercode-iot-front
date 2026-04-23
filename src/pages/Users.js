@@ -75,9 +75,16 @@ export default function Users({ token }) {
   };
 
   const handleSave = async (user) => {
+    const email = user.email?.trim();
+
+    if (!email) {
+      setError("El email es obligatorio.");
+      return;
+    }
+
     try {
       await editUser(token, user.id, {
-        email: user.email,
+        email,
         is_active: user.is_active,
         is_superadmin: user.is_superadmin,
       });
@@ -92,7 +99,10 @@ export default function Users({ token }) {
   const handleModalSubmit = async (e) => {
     e.preventDefault();
     setModalError("");
-    if (!form.username || !form.email || !form.password || !form.confirmPassword || form.tenantIds.length === 0) {
+    const username = form.username.trim();
+    const email = form.email.trim();
+
+    if (!username || !email || !form.password || !form.confirmPassword || form.tenantIds.length === 0) {
       setModalError("Todos los campos son obligatorios.");
       return;
     }
@@ -103,8 +113,8 @@ export default function Users({ token }) {
     setModalLoading(true);
     try {
       await createUser(token, {
-        username: form.username,
-        email: form.email,
+        username,
+        email,
         password: form.password,
         tenant_ids: form.tenantIds,
         is_active: form.is_active,
