@@ -11,6 +11,7 @@ import {
   updateUserTenant,
 } from "../api/userTenants";
 import { getTenantBeaverRoles } from "../api/beaverRoles";
+import { changeBeaverPassword } from "../api/beaverPassword";
 
 const emptyMembershipForm = {
   tenant_id: "",
@@ -26,6 +27,91 @@ function LoadingDots() {
       <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse [animation-delay:150ms]" />
       <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse [animation-delay:300ms]" />
     </span>
+  );
+}
+
+function BeaverPasswordModal({
+  open,
+  form,
+  error,
+  loading,
+  onChange,
+  onClose,
+  onSubmit,
+  showPassword,
+  showConfirmPassword,
+  onTogglePassword,
+  onToggleConfirmPassword,
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+        <button
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+          onClick={onClose}
+          title="Cerrar"
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+        <h2 className="text-xl font-bold mb-2">Cambiar contrasena Beaver</h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Esta accion cambia la contrasena del usuario en Beaver usando el tenant seleccionado.
+        </p>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Nueva contrasena</label>
+            <div className="flex gap-2">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="w-full border rounded px-3 py-2"
+                value={form.password}
+                onChange={(e) => onChange("password", e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="px-3 py-2 border rounded text-sm bg-gray-50 hover:bg-gray-100"
+                onClick={onTogglePassword}
+              >
+                {showPassword ? "Ocultar" : "Ver"}
+              </button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Confirmar contrasena</label>
+            <div className="flex gap-2">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                className="w-full border rounded px-3 py-2"
+                value={form.confirmPassword}
+                onChange={(e) => onChange("confirmPassword", e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="px-3 py-2 border rounded text-sm bg-gray-50 hover:bg-gray-100"
+                onClick={onToggleConfirmPassword}
+              >
+                {showConfirmPassword ? "Ocultar" : "Ver"}
+              </button>
+            </div>
+          </div>
+          {error && <div className="text-red-500 text-sm">{String(error)}</div>}
+          <button
+            type="submit"
+            className="w-full bg-amber-500 text-white py-2 rounded hover:bg-amber-600 transition disabled:opacity-70"
+            disabled={loading}
+          >
+            {loading ? "Cambiando..." : "Cambiar contrasena"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 
@@ -47,6 +133,19 @@ export default function Users({ token }) {
   const [beaverRolesByTenant, setBeaverRolesByTenant] = useState({});
   const [beaverRolesLoadingByTenant, setBeaverRolesLoadingByTenant] = useState({});
   const [beaverRolesErrorByTenant, setBeaverRolesErrorByTenant] = useState({});
+  const [passwordModal, setPasswordModal] = useState({
+    open: false,
+    userId: null,
+    tenantId: null,
+  });
+  const [passwordForm, setPasswordForm] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+  const [passwordModalError, setPasswordModalError] = useState("");
+  const [passwordModalLoading, setPasswordModalLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -374,8 +473,75 @@ export default function Users({ token }) {
     setMembershipSavingKey("");
   }
 
+  function handleOpenPasswordModal(userId, tenantId) {
+    setPasswordModal({ open: true, userId, tenantId });
+    setPasswordForm({ password: "", confirmPassword: "" });
+    setPasswordModalError("");
+    setPasswordModalLoading(false);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  }
+
+  function handleClosePasswordModal() {
+    setPasswordModal({ open: false, userId: null, tenantId: null });
+    setPasswordForm({ password: "", confirmPassword: "" });
+    setPasswordModalError("");
+    setPasswordModalLoading(false);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  }
+
+  function handlePasswordFormChange(field, value) {
+    setPasswordForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handlePasswordModalSubmit(e) {
+    e.preventDefault();
+    setPasswordModalError("");
+
+    if (!passwordForm.password || !passwordForm.confirmPassword) {
+      setPasswordModalError("Debes rellenar ambos campos de contrasena.");
+      return;
+    }
+
+    if (passwordForm.password !== passwordForm.confirmPassword) {
+      setPasswordModalError("Las contrasenas no coinciden.");
+      return;
+    }
+
+    setPasswordModalLoading(true);
+
+    try {
+      await changeBeaverPassword(
+        token,
+        passwordModal.userId,
+        passwordModal.tenantId,
+        passwordForm.password
+      );
+      handleClosePasswordModal();
+      setError("Beaver password updated successfully.");
+    } catch (err) {
+      setPasswordModalError(err);
+    }
+
+    setPasswordModalLoading(false);
+  }
+
   return (
     <div className="p-8">
+      <BeaverPasswordModal
+        open={passwordModal.open}
+        form={passwordForm}
+        error={passwordModalError}
+        loading={passwordModalLoading}
+        onChange={handlePasswordFormChange}
+        onClose={handleClosePasswordModal}
+        onSubmit={handlePasswordModalSubmit}
+        showPassword={showPassword}
+        showConfirmPassword={showConfirmPassword}
+        onTogglePassword={() => setShowPassword((current) => !current)}
+        onToggleConfirmPassword={() => setShowConfirmPassword((current) => !current)}
+      />
       <div className="mb-6 bg-white rounded shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex flex-col gap-2 md:flex-row md:items-center">
           <span className="text-lg font-bold mr-4">Filtros:</span>
@@ -631,6 +797,7 @@ export default function Users({ token }) {
                             <button
                               className="text-xs font-semibold bg-amber-500 text-white px-3 py-1.5 rounded hover:bg-amber-600 transition"
                               type="button"
+                              onClick={() => handleOpenPasswordModal(user.id, membership.tenant_id)}
                             >
                               Cambiar contrasena
                             </button>
