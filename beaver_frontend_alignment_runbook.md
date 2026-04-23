@@ -100,6 +100,39 @@ Payload update:
 }
 ```
 
+### Beaver Roles Lookup
+
+Endpoint ya disponible en HUB:
+
+- `GET /tenants/{tenant_id}/beaver/roles`
+
+Comportamiento:
+
+- solo superadmin
+- el frontend llama al HUB, no a Beaver
+- el HUB autentica tecnicamente contra Beaver con las credenciales del tenant
+- el HUB consulta roles Beaver y devuelve una respuesta simple para frontend
+
+Respuesta actual:
+
+```json
+[
+  {
+    "role_id": "2047360102588059650",
+    "name": "user"
+  },
+  {
+    "role_id": "1",
+    "name": "super_admin"
+  }
+]
+```
+
+Notas:
+
+- Para frontend, lo importante es seleccionar por `name` y guardar `role_id` en `beaver_role_id`.
+- `created_at` existe en la respuesta nativa de Beaver, pero no forma parte del contrato simplificado actual del HUB y no es necesario para la seleccion.
+
 ## Fase 1: Alinear Tenants Con Configuracion Beaver
 
 Objetivo: permitir que el superadmin configure los datos tecnicos Beaver por tenant sin insinuar sincronizacion real.
@@ -193,7 +226,7 @@ Acciones:
   - `beaver_role_id`
   - `is_active`
 - Permitir borrar membresia.
-- Mantener claro que `beaver_role_id` es solo un mapeo tecnico almacenado en HUB.
+- Mantener claro que `beaver_role_id` es un mapeo tecnico almacenado en HUB y usado despues en provisioning Beaver.
 - No anadir password Beaver por usuario o membresia.
 
 Criterios de aceptacion:
@@ -213,21 +246,72 @@ Verificacion recomendada:
 - Borrar una membresia.
 - Recargar la pantalla y confirmar persistencia.
 
+## Fase 4: Sustituir Beaver Role Libre Por Dropdown Desde HUB
+
+Objetivo: dejar de pedir `beaver_role_id` manual y seleccionar un rol Beaver valido por tenant usando el endpoint del HUB.
+
+Contexto:
+
+- Esta fase pasa a ser obligatoria si `beaver_role_id` es necesario para el provisioning posterior en Beaver.
+- El frontend ya no debe usar input de texto libre para `beaver_role_id`.
+- El backend ya expone `GET /tenants/{tenant_id}/beaver/roles`.
+
+Archivos probables:
+
+- `src/pages/Users.js`
+- `src/api/userTenants.js`
+- Opcional nuevo cliente dedicado: `src/api/beaverRoles.js`
+
+Acciones:
+
+- Crear cliente API para consultar:
+  - `getTenantBeaverRoles(token, tenantId)`
+- Sustituir el input libre de `beaver_role_id` por un `select` o dropdown.
+- Cargar roles Beaver segun el tenant de la membresia.
+- Mostrar al usuario el `name` del rol Beaver.
+- Guardar en payload el `role_id` seleccionado dentro de `beaver_role_id`.
+- Al cambiar de tenant en el alta de membresia:
+  - limpiar el rol Beaver seleccionado
+  - volver a consultar el catalogo de roles de ese tenant
+- En edicion de membresia existente:
+  - cargar los roles Beaver del tenant correspondiente
+  - seleccionar el `beaver_role_id` actual si existe en la lista
+- No permitir escritura libre de `beaver_role_id`.
+- Mantener mensajes claros si faltan credenciales Beaver o si no se pueden recuperar roles para ese tenant.
+
+Criterios de aceptacion:
+
+- El alta de membresia no usa input libre para `beaver_role_id`.
+- El usuario puede seleccionar un rol Beaver por nombre.
+- El valor enviado al backend sigue siendo `beaver_role_id = role_id`.
+- Cambiar el tenant limpia el rol Beaver seleccionado.
+- Si el endpoint devuelve lista vacia, la UI informa que no hay roles disponibles.
+- Si el endpoint falla, la UI muestra un error entendible.
+
+Verificacion recomendada:
+
+- Seleccionar tenant en alta de membresia y comprobar que se cargan roles Beaver.
+- Elegir un rol por nombre y guardar la membresia.
+- Editar una membresia existente y confirmar que el rol actual aparece seleccionado.
+- Cambiar tenant y comprobar que el rol Beaver previo se limpia.
+- Simular tenant sin configuracion Beaver o error del endpoint y revisar mensajes.
+
 ## Orden recomendado
 
 1. Fase 1: Tenants con configuracion Beaver.
 2. Fase 2: Usuarios y email unico.
 3. Fase 3: Membresias usuario-tenant.
+4. Fase 4: Beaver roles por dropdown desde HUB.
 
-La Fase 3 es la mas grande porque cambia la manera en que la UI entiende la relacion usuario-tenant. Puede implementarse despues de dejar estable el formulario de tenants.
+La Fase 3 cambia la manera en que la UI entiende la relacion usuario-tenant. La Fase 4 cierra el contrato correcto para `beaver_role_id` y es necesaria si ese dato sera obligatorio en provisioning Beaver.
 
 ## Riesgos y decisiones pendientes
 
 - Decidir si `beaver_admin_password` vacio debe omitirse del payload o enviarse como string vacio. Recomendado: omitirlo para evitar ambiguedad.
 - Decidir catalogo cerrado o texto libre para `role`. El backend acepta string; la UI podria empezar con opciones simples como `user` y `admin`.
-- Decidir si `beaver_role_id` sera texto libre por ahora o si mas adelante vendra de un catalogo Beaver.
 - Decidir si la creacion rapida de usuario mantiene `tenant_ids` o si se migra a crear usuario primero y luego membresias.
 - Coordinar con backend mensajes amigables para email duplicado si ahora llegan como error generico de base de datos.
+- Definir si la UI debe exigir `beaver_role_id` siempre o solo cuando el flujo de negocio realmente vaya a provisionar en Beaver.
 
 ## Lenguaje recomendado en UI
 
@@ -238,6 +322,7 @@ Usar:
 - `Usuario admin Beaver`
 - `Password admin Beaver`
 - `Mapeo rol Beaver`
+- `Rol Beaver`
 - `Guardado en HUB`
 - `Preparado para integracion`
 

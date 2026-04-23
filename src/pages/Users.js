@@ -10,6 +10,7 @@ import {
   getUserTenants,
   updateUserTenant,
 } from "../api/userTenants";
+import { getTenantBeaverRoles } from "../api/beaverRoles";
 
 const emptyMembershipForm = {
   tenant_id: "",
@@ -17,6 +18,16 @@ const emptyMembershipForm = {
   beaver_role_id: "",
   is_active: true,
 };
+
+function LoadingDots() {
+  return (
+    <span className="inline-flex items-center gap-1 ml-2">
+      <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+      <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse [animation-delay:150ms]" />
+      <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse [animation-delay:300ms]" />
+    </span>
+  );
+}
 
 export default function Users({ token }) {
   const [filterTenants, setFilterTenants] = useState([]);
@@ -33,6 +44,9 @@ export default function Users({ token }) {
   const [membershipErrors, setMembershipErrors] = useState({});
   const [membershipLoading, setMembershipLoading] = useState({});
   const [membershipSavingKey, setMembershipSavingKey] = useState("");
+  const [beaverRolesByTenant, setBeaverRolesByTenant] = useState({});
+  const [beaverRolesLoadingByTenant, setBeaverRolesLoadingByTenant] = useState({});
+  const [beaverRolesErrorByTenant, setBeaverRolesErrorByTenant] = useState({});
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -43,10 +57,17 @@ export default function Users({ token }) {
   });
 
   async function loadMembershipsForUsers(userList) {
+    setMembershipLoading(
+      Object.fromEntries(userList.map((user) => [user.id, true]))
+    );
+
     const entries = await Promise.all(
       userList.map(async (user) => {
         try {
           const memberships = await getUserTenants(token, user.id);
+          await Promise.all(
+            memberships.map((membership) => ensureBeaverRolesLoaded(membership.tenant_id))
+          );
           return [user.id, memberships];
         } catch (err) {
           setMembershipErrors((current) => ({ ...current, [user.id]: err }));
@@ -56,6 +77,9 @@ export default function Users({ token }) {
     );
 
     setMembershipsByUser(Object.fromEntries(entries));
+    setMembershipLoading(
+      Object.fromEntries(userList.map((user) => [user.id, false]))
+    );
   }
 
   async function loadUsers() {
@@ -71,6 +95,9 @@ export default function Users({ token }) {
 
     try {
       const memberships = await getUserTenants(token, userId);
+      await Promise.all(
+        memberships.map((membership) => ensureBeaverRolesLoaded(membership.tenant_id))
+      );
       setMembershipsByUser((current) => ({ ...current, [userId]: memberships }));
     } catch (err) {
       setMembershipErrors((current) => ({ ...current, [userId]: err }));
@@ -88,18 +115,7 @@ export default function Users({ token }) {
         ]);
         setUsers(userData);
         setTenants(tenantData);
-        const membershipEntries = await Promise.all(
-          userData.map(async (user) => {
-            try {
-              const memberships = await getUserTenants(token, user.id);
-              return [user.id, memberships];
-            } catch (err) {
-              setMembershipErrors((current) => ({ ...current, [user.id]: err }));
-              return [user.id, []];
-            }
-          })
-        );
-        setMembershipsByUser(Object.fromEntries(membershipEntries));
+        await loadMembershipsForUsers(userData);
       } catch (err) {
         setError(err);
       }
@@ -205,11 +221,16 @@ export default function Users({ token }) {
   }
 
   function handleMembershipFormChange(userId, field, value) {
+    if (field === "tenant_id" && value) {
+      ensureBeaverRolesLoaded(value);
+    }
+
     setMembershipForms((current) => ({
       ...current,
       [userId]: {
         ...getMembershipForm(userId),
         [field]: value,
+        ...(field === "tenant_id" ? { beaver_role_id: "" } : {}),
       },
     }));
   }
@@ -222,14 +243,48 @@ export default function Users({ token }) {
     return tenant?.name || `Tenant ${tenantId}`;
   }
 
-  function getMembershipPayload(membership) {
-    const beaverRoleId = membership.beaver_role_id?.trim();
+  function getBeaverRolesState(tenantId) {
+    const tenantKey = String(tenantId || "");
 
     return {
+      roles: beaverRolesByTenant[tenantKey] || [],
+      loading: Boolean(beaverRolesLoadingByTenant[tenantKey]),
+      error: beaverRolesErrorByTenant[tenantKey] || "",
+    };
+  }
+
+  function getMembershipPayload(membership) {
+    return {
       role: membership.role.trim(),
-      beaver_role_id: beaverRoleId || null,
+      beaver_role_id: membership.beaver_role_id || null,
       is_active: membership.is_active,
     };
+  }
+
+  async function ensureBeaverRolesLoaded(tenantId) {
+    if (!tenantId) {
+      return [];
+    }
+
+    const tenantKey = String(tenantId);
+
+    if (beaverRolesByTenant[tenantKey]) {
+      return beaverRolesByTenant[tenantKey];
+    }
+
+    setBeaverRolesLoadingByTenant((current) => ({ ...current, [tenantKey]: true }));
+    setBeaverRolesErrorByTenant((current) => ({ ...current, [tenantKey]: "" }));
+
+    try {
+      const roles = await getTenantBeaverRoles(token, tenantId);
+      setBeaverRolesByTenant((current) => ({ ...current, [tenantKey]: roles }));
+      return roles;
+    } catch (err) {
+      setBeaverRolesErrorByTenant((current) => ({ ...current, [tenantKey]: err }));
+      return [];
+    } finally {
+      setBeaverRolesLoadingByTenant((current) => ({ ...current, [tenantKey]: false }));
+    }
   }
 
   async function handleCreateMembership(userId) {
@@ -421,6 +476,7 @@ export default function Users({ token }) {
             const availableTenants = tenants.filter(
               (tenant) => !assignedTenantIds.has(String(tenant.id))
             );
+            const newMembershipBeaverRoles = getBeaverRolesState(membershipForm.tenant_id);
 
             return (
             <div key={user.id} className="bg-white rounded shadow p-4 relative">
@@ -461,7 +517,10 @@ export default function Users({ token }) {
               <div className="border-t mt-4 pt-4">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div>
-                    <div className="text-sm font-semibold text-gray-700">Tenant memberships</div>
+                    <div className="text-sm font-semibold text-gray-700 flex items-center">
+                      Tenant memberships
+                      {membershipLoading[user.id] && <LoadingDots />}
+                    </div>
                     <div className="text-xs text-gray-500">
                       Roles y mapeos guardados en HUB. No ejecuta sincronizacion con Beaver.
                     </div>
@@ -480,10 +539,16 @@ export default function Users({ token }) {
                 )}
 
                 <div className="space-y-3 mb-4">
+                  {membershipLoading[user.id] && memberships.length === 0 && (
+                    <div className="border rounded p-3 bg-blue-50 text-sm text-blue-700">
+                      Cargando memberships y roles Beaver...
+                    </div>
+                  )}
                   {memberships.length > 0 ? (
                     memberships.map((membership) => {
                       const saveKey = `${user.id}-${membership.tenant_id}`;
                       const deleteKey = `${user.id}-${membership.tenant_id}-delete`;
+                      const membershipBeaverRoles = getBeaverRolesState(membership.tenant_id);
 
                       return (
                         <div key={`${user.id}-${membership.tenant_id}`} className="border rounded p-3 bg-gray-50">
@@ -510,21 +575,34 @@ export default function Users({ token }) {
                               </select>
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-500 mb-1">Mapeo rol Beaver</label>
-                              <input
-                                type="text"
-                                className="w-full border rounded px-2 py-1.5 text-sm bg-white"
-                                value={membership.beaver_role_id || ""}
-                                onChange={(e) =>
-                                  handleMembershipFieldChange(
-                                    user.id,
-                                    membership.tenant_id,
-                                    "beaver_role_id",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Opcional"
-                              />
+                              <label className="block text-xs text-gray-500 mb-1">Rol Beaver</label>
+                              {membershipBeaverRoles.loading ? (
+                                <div className="text-sm text-gray-500">Loading Beaver roles...</div>
+                              ) : membershipBeaverRoles.error ? (
+                                <div className="text-sm text-red-500">Could not load Beaver roles for this tenant</div>
+                              ) : membershipBeaverRoles.roles.length === 0 ? (
+                                <div className="text-sm text-gray-500">No Beaver roles available for this tenant</div>
+                              ) : (
+                                <select
+                                  className="w-full border rounded px-2 py-1.5 text-sm bg-white"
+                                  value={membership.beaver_role_id || ""}
+                                  onChange={(e) =>
+                                    handleMembershipFieldChange(
+                                      user.id,
+                                      membership.tenant_id,
+                                      "beaver_role_id",
+                                      e.target.value
+                                    )
+                                  }
+                                >
+                                  <option value="">Selecciona rol Beaver...</option>
+                                  {membershipBeaverRoles.roles.map((role) => (
+                                    <option key={role.role_id} value={role.role_id}>
+                                      {role.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              )}
                             </div>
                             <div className="flex items-center gap-2">
                               <input
@@ -593,15 +671,34 @@ export default function Users({ token }) {
                       <option value="user">user</option>
                       <option value="admin">admin</option>
                     </select>
-                    <input
-                      type="text"
-                      className="w-full border rounded px-2 py-1.5 text-sm"
-                      value={membershipForm.beaver_role_id}
-                      onChange={(e) =>
-                        handleMembershipFormChange(user.id, "beaver_role_id", e.target.value)
-                      }
-                      placeholder="Mapeo rol Beaver opcional"
-                    />
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Rol Beaver</label>
+                      {membershipForm.tenant_id && newMembershipBeaverRoles.loading ? (
+                        <div className="text-sm text-gray-500">Loading Beaver roles...</div>
+                      ) : membershipForm.tenant_id && newMembershipBeaverRoles.error ? (
+                        <div className="text-sm text-red-500">Could not load Beaver roles for this tenant</div>
+                      ) : membershipForm.tenant_id && newMembershipBeaverRoles.roles.length === 0 ? (
+                        <div className="text-sm text-gray-500">No Beaver roles available for this tenant</div>
+                      ) : (
+                        <select
+                          className="w-full border rounded px-2 py-1.5 text-sm"
+                          value={membershipForm.beaver_role_id}
+                          onChange={(e) =>
+                            handleMembershipFormChange(user.id, "beaver_role_id", e.target.value)
+                          }
+                          disabled={!membershipForm.tenant_id}
+                        >
+                          <option value="">
+                            {membershipForm.tenant_id ? "Selecciona rol Beaver..." : "Selecciona tenant primero..."}
+                          </option>
+                          {newMembershipBeaverRoles.roles.map((role) => (
+                            <option key={role.role_id} value={role.role_id}>
+                              {role.name}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
                     <label className="flex items-center gap-2 text-sm text-gray-700">
                       <input
                         type="checkbox"
