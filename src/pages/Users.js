@@ -12,12 +12,23 @@ import {
 } from "../api/userTenants";
 import { getTenantBeaverRoles } from "../api/beaverRoles";
 import { changeBeaverPassword } from "../api/beaverPassword";
+import { provisionBeaverUser } from "../api/beaverProvision";
 
 const emptyMembershipForm = {
   tenant_id: "",
   role: "user",
   beaver_role_id: "",
   is_active: true,
+};
+
+const initialUserForm = {
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  is_active: true,
+  is_superadmin: false,
+  membership: { ...emptyMembershipForm },
 };
 
 function LoadingDots() {
@@ -35,6 +46,7 @@ function BeaverPasswordModal({
   form,
   error,
   loading,
+  mode = "change",
   onChange,
   onClose,
   onSubmit,
@@ -47,6 +59,8 @@ function BeaverPasswordModal({
     return null;
   }
 
+  const isProvision = mode === "provision";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
@@ -58,9 +72,13 @@ function BeaverPasswordModal({
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
-        <h2 className="text-xl font-bold mb-2">Cambiar contrasena Beaver</h2>
+        <h2 className="text-xl font-bold mb-2">
+          {isProvision ? "Provisionar Beaver" : "Cambiar contrasena Beaver"}
+        </h2>
         <p className="text-sm text-gray-500 mb-4">
-          Esta accion cambia la contrasena del usuario en Beaver usando el tenant seleccionado.
+          {isProvision
+            ? "Esta accion crea o asocia la cuenta del usuario en Beaver usando el tenant seleccionado."
+            : "Esta accion cambia la contrasena del usuario en Beaver usando el tenant seleccionado."}
         </p>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
@@ -107,7 +125,9 @@ function BeaverPasswordModal({
             className="w-full bg-amber-500 text-white py-2 rounded hover:bg-amber-600 transition disabled:opacity-70"
             disabled={loading}
           >
-            {loading ? "Cambiando..." : "Cambiar contrasena"}
+            {loading
+              ? isProvision ? "Provisionando..." : "Cambiando..."
+              : isProvision ? "Provisionar Beaver" : "Cambiar contrasena"}
           </button>
         </form>
       </div>
@@ -137,6 +157,7 @@ export default function Users({ token }) {
     open: false,
     userId: null,
     tenantId: null,
+    mode: "change",
   });
   const [passwordForm, setPasswordForm] = useState({
     password: "",
@@ -146,14 +167,7 @@ export default function Users({ token }) {
   const [passwordModalLoading, setPasswordModalLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    tenantIds: [],
-    is_active: true,
-  });
+  const [form, setForm] = useState(initialUserForm);
 
   async function loadMembershipsForUsers(userList) {
     setMembershipLoading(
@@ -288,8 +302,10 @@ export default function Users({ token }) {
     setModalError("");
     const username = form.username.trim();
     const email = form.email.trim();
+    const isSuperadmin = Boolean(form.is_superadmin);
+    const membership = form.membership;
 
-    if (!username || !email || !form.password || !form.confirmPassword || form.tenantIds.length === 0) {
+    if (!username || !email || !form.password || !form.confirmPassword) {
       setModalError("Todos los campos son obligatorios.");
       return;
     }
@@ -297,23 +313,87 @@ export default function Users({ token }) {
       setModalError("Las contraseñas no coinciden.");
       return;
     }
+    if (!isSuperadmin) {
+      if (!membership.tenant_id || !membership.role.trim() || !membership.beaver_role_id) {
+        setModalError("Tenant, rol HUB y rol Beaver son obligatorios para usuarios normales.");
+        return;
+      }
+
+      const rolesState = getBeaverRolesState(membership.tenant_id);
+      if (rolesState.loading) {
+        setModalError("Espera a que terminen de cargar los roles Beaver.");
+        return;
+      }
+      if (rolesState.error || rolesState.roles.length === 0) {
+        setModalError("No se pudieron validar roles Beaver para el tenant seleccionado.");
+        return;
+      }
+    }
+
     setModalLoading(true);
     try {
-      await createUser(token, {
+      const createdUser = await createUser(token, {
         username,
         email,
         password: form.password,
-        tenant_ids: form.tenantIds,
+        tenant_ids: [],
         is_active: form.is_active,
+        is_superadmin: isSuperadmin,
       });
+
+      const createdUserId = createdUser.id || createdUser.user?.id || createdUser.user_id;
+
+      if (!createdUserId) {
+        throw new Error("Usuario creado, pero no se pudo obtener su ID para crear la membresia.");
+      }
+
+      if (!isSuperadmin) {
+        await createUserTenant(token, createdUserId, {
+          tenant_id: Number(membership.tenant_id),
+          role: membership.role.trim(),
+          beaver_role_id: membership.beaver_role_id,
+          is_active: membership.is_active,
+        });
+
+        if (membership.is_active) {
+          try {
+            await provisionBeaverUser(token, createdUserId, membership.tenant_id, form.password);
+          } catch (provisionError) {
+            setShowModal(false);
+            setForm(initialUserForm);
+            await loadUsers();
+            setError(
+              "Usuario creado en HUB y membresia guardada, pero no se pudo provisionar en Beaver. Puedes reintentar."
+            );
+            return;
+          }
+        }
+      }
+
       setShowModal(false);
-      // Refresh users
+      setForm(initialUserForm);
       await loadUsers();
     } catch (err) {
-      setModalError(err);
+      setModalError(err.message || err);
+    } finally {
+      setModalLoading(false);
     }
-    setModalLoading(false);
   };
+
+  function handleModalMembershipChange(field, value) {
+    if (field === "tenant_id" && value) {
+      ensureBeaverRolesLoaded(value);
+    }
+
+    setForm((current) => ({
+      ...current,
+      membership: {
+        ...current.membership,
+        [field]: value,
+        ...(field === "tenant_id" ? { beaver_role_id: "" } : {}),
+      },
+    }));
+  }
 
   function getMembershipForm(userId) {
     return membershipForms[userId] || emptyMembershipForm;
@@ -474,7 +554,16 @@ export default function Users({ token }) {
   }
 
   function handleOpenPasswordModal(userId, tenantId) {
-    setPasswordModal({ open: true, userId, tenantId });
+    setPasswordModal({ open: true, userId, tenantId, mode: "change" });
+    setPasswordForm({ password: "", confirmPassword: "" });
+    setPasswordModalError("");
+    setPasswordModalLoading(false);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  }
+
+  function handleOpenProvisionModal(userId, tenantId) {
+    setPasswordModal({ open: true, userId, tenantId, mode: "provision" });
     setPasswordForm({ password: "", confirmPassword: "" });
     setPasswordModalError("");
     setPasswordModalLoading(false);
@@ -483,7 +572,7 @@ export default function Users({ token }) {
   }
 
   function handleClosePasswordModal() {
-    setPasswordModal({ open: false, userId: null, tenantId: null });
+    setPasswordModal({ open: false, userId: null, tenantId: null, mode: "change" });
     setPasswordForm({ password: "", confirmPassword: "" });
     setPasswordModalError("");
     setPasswordModalLoading(false);
@@ -512,20 +601,32 @@ export default function Users({ token }) {
     setPasswordModalLoading(true);
 
     try {
-      await changeBeaverPassword(
-        token,
-        passwordModal.userId,
-        passwordModal.tenantId,
-        passwordForm.password
-      );
+      if (passwordModal.mode === "provision") {
+        await provisionBeaverUser(
+          token,
+          passwordModal.userId,
+          passwordModal.tenantId,
+          passwordForm.password
+        );
+        setError("Usuario provisionado en Beaver correctamente.");
+      } else {
+        await changeBeaverPassword(
+          token,
+          passwordModal.userId,
+          passwordModal.tenantId,
+          passwordForm.password
+        );
+        setError("Beaver password updated successfully.");
+      }
       handleClosePasswordModal();
-      setError("Beaver password updated successfully.");
     } catch (err) {
       setPasswordModalError(err);
     }
 
     setPasswordModalLoading(false);
   }
+
+  const modalMembershipBeaverRoles = getBeaverRolesState(form.membership.tenant_id);
 
   return (
     <div className="p-8">
@@ -534,6 +635,7 @@ export default function Users({ token }) {
         form={passwordForm}
         error={passwordModalError}
         loading={passwordModalLoading}
+        mode={passwordModal.mode}
         onChange={handlePasswordFormChange}
         onClose={handleClosePasswordModal}
         onSubmit={handlePasswordModalSubmit}
@@ -568,7 +670,7 @@ export default function Users({ token }) {
       {/* Modal for creating user */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg relative">
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
               onClick={() => setShowModal(false)}
@@ -594,29 +696,87 @@ export default function Users({ token }) {
                 <label className="block text-sm font-medium mb-1">Confirmar contraseña</label>
                 <input type="password" className="w-full border rounded px-3 py-2" value={form.confirmPassword} onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))} required />
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Tenants</label>
-                {modalLoading ? (
-                  <div className="text-gray-500">Cargando tenants...</div>
-                ) : tenants.length > 0 ? (
-                  <Select
-                    isMulti
-                    options={tenants.map(t => ({ value: t.id, label: t.name }))}
-                    value={tenants.filter(t => form.tenantIds.includes(String(t.id)) || form.tenantIds.includes(t.id)).map(t => ({ value: t.id, label: t.name }))}
-                    onChange={selected => {
-                      setForm(f => ({ ...f, tenantIds: selected.map(s => String(s.value)) }));
-                    }}
-                    placeholder="Selecciona uno o varios tenants..."
-                    classNamePrefix="react-select"
-                  />
-                ) : (
-                  <div className="text-red-500">No hay tenants disponibles</div>
-                )}
-              </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" checked={form.is_active} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} />
                 <label className="text-sm">Activo</label>
               </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" checked={form.is_superadmin} onChange={e => setForm(f => ({ ...f, is_superadmin: e.target.checked }))} />
+                <label className="text-sm">Superadmin</label>
+              </div>
+              {!form.is_superadmin && (
+                <div className="border rounded p-3 space-y-3">
+                  <div className="text-sm font-semibold text-gray-700">Membresia inicial</div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Tenant</label>
+                    {modalLoading ? (
+                      <div className="text-gray-500">Cargando tenants...</div>
+                    ) : tenants.length > 0 ? (
+                      <select
+                        className="w-full border rounded px-3 py-2"
+                        value={form.membership.tenant_id}
+                        onChange={(e) => handleModalMembershipChange("tenant_id", e.target.value)}
+                        required={!form.is_superadmin}
+                      >
+                        <option value="">Selecciona tenant...</option>
+                        {tenants.map((tenant) => (
+                          <option key={tenant.id} value={tenant.id}>
+                            {tenant.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="text-red-500">No hay tenants disponibles</div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Rol HUB</label>
+                    <select
+                      className="w-full border rounded px-3 py-2"
+                      value={form.membership.role}
+                      onChange={(e) => handleModalMembershipChange("role", e.target.value)}
+                    >
+                      <option value="user">user</option>
+                      <option value="admin">admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Rol Beaver</label>
+                    {form.membership.tenant_id && modalMembershipBeaverRoles.loading ? (
+                      <div className="text-sm text-gray-500">Loading Beaver roles...</div>
+                    ) : form.membership.tenant_id && modalMembershipBeaverRoles.error ? (
+                      <div className="text-sm text-red-500">Could not load Beaver roles for this tenant</div>
+                    ) : form.membership.tenant_id && modalMembershipBeaverRoles.roles.length === 0 ? (
+                      <div className="text-sm text-gray-500">No Beaver roles available for this tenant</div>
+                    ) : (
+                      <select
+                        className="w-full border rounded px-3 py-2"
+                        value={form.membership.beaver_role_id}
+                        onChange={(e) => handleModalMembershipChange("beaver_role_id", e.target.value)}
+                        disabled={!form.membership.tenant_id}
+                        required={!form.is_superadmin}
+                      >
+                        <option value="">
+                          {form.membership.tenant_id ? "Selecciona rol Beaver..." : "Selecciona tenant primero..."}
+                        </option>
+                        {modalMembershipBeaverRoles.roles.map((role) => (
+                          <option key={role.role_id} value={role.role_id}>
+                            {role.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={form.membership.is_active}
+                      onChange={(e) => handleModalMembershipChange("is_active", e.target.checked)}
+                    />
+                    Membresia activa
+                  </label>
+                </div>
+              )}
               {modalError && <div className="text-red-500 text-sm">{modalError}</div>}
               <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition" disabled={modalLoading}>
                 {modalLoading ? "Creando..." : "Crear usuario"}
@@ -688,7 +848,7 @@ export default function Users({ token }) {
                       {membershipLoading[user.id] && <LoadingDots />}
                     </div>
                     <div className="text-xs text-gray-500">
-                      Roles y mapeos guardados en HUB. No ejecuta sincronizacion con Beaver.
+                      Roles y mapeos guardados en HUB. Puedes provisionar Beaver desde cada membresia activa.
                     </div>
                   </div>
                   <button
@@ -800,6 +960,14 @@ export default function Users({ token }) {
                               onClick={() => handleOpenPasswordModal(user.id, membership.tenant_id)}
                             >
                               Cambiar contrasena
+                            </button>
+                            <button
+                              className="text-xs font-semibold bg-emerald-600 text-white px-3 py-1.5 rounded hover:bg-emerald-700 transition disabled:opacity-60"
+                              type="button"
+                              onClick={() => handleOpenProvisionModal(user.id, membership.tenant_id)}
+                              disabled={!membership.is_active || !membership.beaver_role_id}
+                            >
+                              Provisionar Beaver
                             </button>
                             <button
                               className="text-xs font-semibold bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 transition disabled:opacity-60"
