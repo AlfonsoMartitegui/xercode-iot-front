@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { login } from "../api/auth";
+import { createBeaverHandoff } from "../api/beaverHandoff";
 import { getMe } from "../api/user";
 import Dashboard from "./Dashboard";
 
@@ -9,8 +10,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [tenantCode, setTenantCode] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,8 +25,17 @@ export default function Login() {
         // Redirigir a dashboard
         // Se muestra el dashboard en vez del login
       } else {
-        setTenantCode(userData.tenant_code);
-        setShowModal(true);
+        try {
+          const handoff = await createBeaverHandoff(data.access_token, userData.tenant_id);
+          if (!handoff.redirect_url || !handoff.code) {
+            throw new Error("Invalid Beaver handoff response");
+          }
+          const url = new URL("/hub-bridge", handoff.redirect_url);
+          url.searchParams.set("code", handoff.code);
+          window.location.assign(url.toString());
+        } catch {
+          setError("No se pudo iniciar sesion en Beaver. Contacta con un administrador.");
+        }
       }
     } catch (err) {
       if (typeof err === 'object' && err !== null) {
@@ -77,15 +85,6 @@ export default function Login() {
             Entrar
           </button>
         </form>
-        {/* Modal para no superadmin */}
-        {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm mx-auto text-center">
-              <h3 className="text-lg font-bold mb-4">REDIRECTING TO:</h3>
-              <div className="text-blue-600 font-mono text-xl">{tenantCode}</div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
