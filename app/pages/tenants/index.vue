@@ -14,6 +14,7 @@ import {
 import type { Tenant, TenantDomainPayload, TenantPayload } from '~/services/types'
 import BaseAlert from '~/components/ui/BaseAlert.vue'
 import BaseSpinner from '~/components/ui/BaseSpinner.vue'
+import ContentLayout from '~/components/layout/ContentLayout.vue'
 import TenantDomainModal from '~/components/tenants/TenantDomainModal.vue'
 import TenantFormModal from '~/components/tenants/TenantFormModal.vue'
 import TenantList from '~/components/tenants/TenantList.vue'
@@ -265,32 +266,14 @@ onMounted(loadTenants)
 </script>
 
 <template>
-  <section class="tenants-page">
-    <header class="tenants-page__header">
-      <div>
-        <p>Administracion</p>
-        <h1>Tenants</h1>
-      </div>
-
-      <button type="button" @click="openCreateModal">
-        Anadir tenant
-      </button>
-    </header>
-
-    <!-- <section class="tenants-summary" aria-label="Resumen tenants">
-      <article>
-        <span>Total tenants</span>
-        <strong>{{ tenants.length }}</strong>
-      </article>
-      <article>
-        <span>Activos</span>
-        <strong>{{ activeTenants }}</strong>
-      </article>
-      <article>
-        <span>Dominios</span>
-        <strong>{{ totalDomains }}</strong>
-      </article>
-    </section> -->
+  <ContentLayout>
+    <template #toolbar>
+      <header class="tenants-page__toolbar">
+        <button type="button" @click="openCreateModal">
+          Anadir tenant
+        </button>
+      </header>
+    </template>
 
     <BaseAlert v-if="error" type="error">
       {{ error }}
@@ -311,78 +294,53 @@ onMounted(loadTenants)
       @edit-domain="handleEditDomainClick"
       @delete-domain="handleDeleteDomainClick"
     />
+  </ContentLayout>
 
-    <TenantFormModal
-      v-if="showCreateModal"
-      v-model="form"
-      title="Anadir tenant"
-      submit-label="Crear tenant"
-      :loading="modalLoading"
-      :error="modalError"
-      @close="resetModalState"
-      @submit="handleModalSubmit"
-    />
+  <TenantFormModal
+    v-if="showCreateModal"
+    v-model="form"
+    title="Anadir tenant"
+    submit-label="Crear tenant"
+    :loading="modalLoading"
+    :error="modalError"
+    @close="resetModalState"
+    @submit="handleModalSubmit"
+  />
 
-    <TenantFormModal
-      v-if="editModal.open"
-      v-model="form"
-      title="Editar tenant"
-      submit-label="Guardar cambios"
-      :loading="modalLoading"
-      :error="modalError"
-      is-edit
-      @close="resetModalState"
-      @submit="handleModalSubmit"
-    />
+  <TenantFormModal
+    v-if="editModal.open"
+    v-model="form"
+    title="Editar tenant"
+    submit-label="Guardar cambios"
+    :loading="modalLoading"
+    :error="modalError"
+    is-edit
+    @close="resetModalState"
+    @submit="handleModalSubmit"
+  />
 
-    <TenantDomainModal
-      v-if="domainModal.open"
-      v-model="domainForm"
-      :title="domainModal.domainId ? 'Editar dominio' : 'Anadir dominio'"
-      :submit-label="domainModal.domainId ? 'Guardar dominio' : 'Crear dominio'"
-      :loading="domainModalLoading"
-      :error="domainModalError"
-      @close="resetDomainModalState"
-      @submit="handleDomainSubmit"
-    />
-  </section>
+  <TenantDomainModal
+    v-if="domainModal.open"
+    v-model="domainForm"
+    :title="domainModal.domainId ? 'Editar dominio' : 'Anadir dominio'"
+    :submit-label="domainModal.domainId ? 'Guardar dominio' : 'Crear dominio'"
+    :loading="domainModalLoading"
+    :error="domainModalError"
+    @close="resetDomainModalState"
+    @submit="handleDomainSubmit"
+  />
 </template>
 
 <style scoped>
-.tenants-page {
-  display: grid;
-  gap: 1rem;
-}
-
-.tenants-page__header {
+.tenants-page__toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 1rem;
-  border-radius: 1rem;
-  padding: 1rem;
-  background: #ffffff;
-  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.07);
+  min-width: 0;
 }
 
-.tenants-page__header p,
-.tenants-page__header h1 {
-  margin: 0;
-}
-
-.tenants-page__header p {
-  color: #64748b;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.tenants-page__header h1 {
-  font-size: 1.8rem;
-}
-
-.tenants-page__header button {
+.tenants-page__toolbar button {
   border: 0;
   border-radius: 0.75rem;
   padding: 0.8rem 1rem;
@@ -420,9 +378,8 @@ onMounted(loadTenants)
 }
 
 @media (max-width: 640px) {
-  .tenants-page__header {
-    align-items: stretch;
-    flex-direction: column;
+  .tenants-page__toolbar button {
+    width: 100%;
   }
 }
 </style>

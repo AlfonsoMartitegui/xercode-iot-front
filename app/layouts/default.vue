@@ -111,7 +111,7 @@ watch(
 }
 
 .authenticated-layout__content {
-  padding: 2rem 1.5rem;
+  padding: 1rem 1.5rem 2rem;
 }
 
 @media (max-width: 820px) {
@@ -131,7 +131,7 @@ watch(
   }
 
   .authenticated-layout__content {
-    padding: 1rem;
+    padding: 0.75rem 1rem 1rem;
   }
 
   .authenticated-layout__notifications {

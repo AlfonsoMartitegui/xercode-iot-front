@@ -19,6 +19,7 @@ import BeaverPasswordModal from '~/components/users/BeaverPasswordModal.vue'
 import UserFormModal from '~/components/users/UserFormModal.vue'
 import UsersTable from '~/components/users/UsersTable.vue'
 import UsersToolbar from '~/components/users/UsersToolbar.vue'
+import ContentLayout from '~/components/layout/ContentLayout.vue'
 
 definePageMeta({
   middleware: ['auth', 'superadmin'],
@@ -541,12 +542,14 @@ onMounted(loadInitialData)
 </script>
 
 <template>
-  <section class="users-page">
-    <UsersToolbar
-      v-model:selected-tenant-ids="selectedTenantIds"
-      :tenants="tenants"
-      @create="showModal = true"
-    />
+  <ContentLayout>
+    <template #toolbar>
+      <UsersToolbar
+        v-model:selected-tenant-ids="selectedTenantIds"
+        :tenants="tenants"
+        @create="showModal = true"
+      />
+    </template>
 
     <!-- <section class="users-summary" aria-label="Resumen usuarios">
       <article>
@@ -600,40 +603,35 @@ onMounted(loadInitialData)
       @password="(userId, tenantId) => openPasswordModal(userId, tenantId, 'change')"
       @provision="(userId, tenantId) => openPasswordModal(userId, tenantId, 'provision')"
     />
+  </ContentLayout>
 
-    <UserFormModal
-      v-if="showModal"
-      v-model="form"
-      :tenants="tenants"
-      :beaver-roles="modalMembershipRolesState.roles"
-      :roles-loading="modalMembershipRolesState.loading"
-      :roles-error="modalMembershipRolesState.error"
-      :loading="modalLoading"
-      :error="modalError"
-      @close="resetCreateModal"
-      @submit="handleModalSubmit"
-      @tenant-change="handleModalTenantChange"
-    />
+  <UserFormModal
+    v-if="showModal"
+    v-model="form"
+    :tenants="tenants"
+    :beaver-roles="modalMembershipRolesState.roles"
+    :roles-loading="modalMembershipRolesState.loading"
+    :roles-error="modalMembershipRolesState.error"
+    :loading="modalLoading"
+    :error="modalError"
+    @close="resetCreateModal"
+    @submit="handleModalSubmit"
+    @tenant-change="handleModalTenantChange"
+  />
 
-    <BeaverPasswordModal
-      v-if="passwordModal.open"
-      v-model:password="passwordForm.password"
-      v-model:confirm-password="passwordForm.confirmPassword"
-      :mode="passwordModal.mode"
-      :loading="passwordModalLoading"
-      :error="passwordModalError"
-      @close="closePasswordModal"
-      @submit="handlePasswordModalSubmit"
-    />
-  </section>
+  <BeaverPasswordModal
+    v-if="passwordModal.open"
+    v-model:password="passwordForm.password"
+    v-model:confirm-password="passwordForm.confirmPassword"
+    :mode="passwordModal.mode"
+    :loading="passwordModalLoading"
+    :error="passwordModalError"
+    @close="closePasswordModal"
+    @submit="handlePasswordModalSubmit"
+  />
 </template>
 
 <style scoped>
-.users-page {
-  display: grid;
-  gap: 1rem;
-}
-
 .users-summary {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
