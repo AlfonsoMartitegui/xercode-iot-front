@@ -19,8 +19,8 @@ import TenantFormModal from '~/components/tenants/TenantFormModal.vue'
 import TenantList from '~/components/tenants/TenantList.vue'
 
 definePageMeta({
-  layout: 'authenticated',
   middleware: ['auth', 'superadmin'],
+  title: 'Tenants',
 })
 
 const emptyForm = (): TenantPayload => ({
@@ -277,7 +277,7 @@ onMounted(loadTenants)
       </button>
     </header>
 
-    <section class="tenants-summary" aria-label="Resumen tenants">
+    <!-- <section class="tenants-summary" aria-label="Resumen tenants">
       <article>
         <span>Total tenants</span>
         <strong>{{ tenants.length }}</strong>
@@ -290,7 +290,7 @@ onMounted(loadTenants)
         <span>Dominios</span>
         <strong>{{ totalDomains }}</strong>
       </article>
-    </section>
+    </section> -->
 
     <BaseAlert v-if="error" type="error">
       {{ error }}

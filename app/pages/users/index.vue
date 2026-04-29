@@ -21,8 +21,8 @@ import UsersTable from '~/components/users/UsersTable.vue'
 import UsersToolbar from '~/components/users/UsersToolbar.vue'
 
 definePageMeta({
-  layout: 'authenticated',
   middleware: ['auth', 'superadmin'],
+  title: 'Usuarios',
 })
 
 type MembershipForm = {
@@ -548,7 +548,7 @@ onMounted(loadInitialData)
       @create="showModal = true"
     />
 
-    <section class="users-summary" aria-label="Resumen usuarios">
+    <!-- <section class="users-summary" aria-label="Resumen usuarios">
       <article>
         <span>Total usuarios</span>
         <strong>{{ users.length }}</strong>
@@ -565,7 +565,7 @@ onMounted(loadInitialData)
         <span>Membresias</span>
         <strong>{{ totalMemberships }}</strong>
       </article>
-    </section>
+    </section> -->
 
     <BaseAlert v-if="error" type="error">
       {{ error }}

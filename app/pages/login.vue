@@ -1,51 +1,57 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { createBeaverHandoffRequest } from '~/services/auth.service'
-import { getApiErrorMessage } from '~/services/errors'
+import { reactive, ref } from "vue";
+import { createBeaverHandoffRequest } from "~/services/auth.service";
+import { getApiErrorMessage } from "~/services/errors";
 
 definePageMeta({
-  middleware: 'guest',
-})
+  layout: "login",
+  middleware: "guest",
+});
 
-const auth = useAuth()
-const errorMessage = ref('')
-const submitting = ref(false)
+const auth = useAuth();
+const errorMessage = ref("");
+const submitting = ref(false);
 const form = reactive({
-  username: '',
-  password: '',
-})
+  username: "",
+  password: "",
+});
 
 async function handleSubmit() {
-  errorMessage.value = ''
-  submitting.value = true
+  errorMessage.value = "";
+  submitting.value = true;
 
   try {
     const user = await auth.signIn({
       username: form.username,
       password: form.password,
-    })
+    });
 
     if (user?.is_superadmin) {
-      await navigateTo('/dashboard')
-      return
+      await navigateTo("/");
+      return;
     }
 
-    const handoff = await createBeaverHandoffRequest(user?.tenant_id as number | null | undefined)
+    const handoff = await createBeaverHandoffRequest(
+      user?.tenant_id as number | null | undefined,
+    );
 
     if (!handoff.redirect_url || !handoff.code) {
-      throw new Error('Invalid Beaver handoff response')
+      throw new Error("Invalid Beaver handoff response");
     }
 
-    const url = new URL('/hub-bridge', handoff.redirect_url)
-    url.searchParams.set('code', handoff.code)
+    const url = new URL("/hub-bridge", handoff.redirect_url);
+    url.searchParams.set("code", handoff.code);
 
     if (import.meta.client) {
-      window.location.assign(url.toString())
+      window.location.assign(url.toString());
     }
   } catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No se pudo iniciar sesion.')
+    errorMessage.value = getApiErrorMessage(
+      error,
+      "No se pudo iniciar sesion.",
+    );
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
 }
 </script>
@@ -57,12 +63,22 @@ async function handleSubmit() {
       <form class="login-form" @submit.prevent="handleSubmit">
         <label>
           <span>Usuario</span>
-          <input v-model="form.username" type="text" autocomplete="username" required>
+          <input
+            v-model="form.username"
+            type="text"
+            autocomplete="username"
+            required
+          />
         </label>
 
         <label>
           <span>Contrasena</span>
-          <input v-model="form.password" type="password" autocomplete="current-password" required>
+          <input
+            v-model="form.password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
         </label>
 
         <p v-if="errorMessage" class="login-error">
@@ -70,7 +86,7 @@ async function handleSubmit() {
         </p>
 
         <button type="submit" :disabled="submitting">
-          {{ submitting ? 'Entrando...' : 'Entrar' }}
+          {{ submitting ? "Entrando..." : "Entrar" }}
         </button>
       </form>
     </div>

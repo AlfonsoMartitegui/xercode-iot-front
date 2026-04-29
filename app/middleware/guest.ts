@@ -4,6 +4,6 @@ export default defineNuxtRouteMiddleware(async () => {
   await auth.hydrate()
 
   if (auth.isAuthenticated.value) {
-    return navigateTo('/dashboard')
+    return navigateTo('/')
   }
 })

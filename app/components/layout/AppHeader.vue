@@ -1,23 +1,49 @@
 <script setup lang="ts">
-const auth = useAuth()
+defineProps<{
+  desktopSidebarVisible?: boolean
+  mobileSidebarOpen?: boolean
+}>()
+
+const emit = defineEmits<{
+  openSidebar: []
+}>()
+
+const route = useRoute()
+const pageTitle = computed(() => String(route.meta.title || 'Xercode IoT'))
 </script>
 
 <template>
   <header class="app-header">
-    <div>
-      <span>Area privada</span>
-      <strong v-if="auth.user.value?.username">{{ auth.user.value.username }}</strong>
-      <strong v-else>Xercode IoT</strong>
-    </div>
+    <div class="app-header__start">
+      <button
+        :class="[
+          'app-header__menu',
+          {
+            'is-desktop-sidebar-visible': desktopSidebarVisible,
+            'is-mobile-sidebar-open': mobileSidebarOpen,
+          },
+        ]"
+        type="button"
+        :aria-expanded="mobileSidebarOpen || desktopSidebarVisible"
+        aria-controls="app-sidebar"
+        aria-label="Abrir navegacion"
+        @click="emit('openSidebar')"
+      >
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+      </button>
 
-    <button type="button" @click="auth.signOut()">
-      Cerrar sesion
-    </button>
+      <h1>{{ pageTitle }}</h1>
+    </div>
   </header>
 </template>
 
 <style scoped>
 .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,26 +54,69 @@ const auth = useAuth()
   backdrop-filter: blur(12px);
 }
 
-.app-header div {
-  display: grid;
-  gap: 0.15rem;
+.app-header__start {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
 }
 
-.app-header span {
-  color: #64748b;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.app-header h1 {
+  margin: 0;
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.app-header button {
-  border: 0;
+.app-header__menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.22rem;
+  flex: 0 0 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid #cbd5e1;
   border-radius: 0.7rem;
-  padding: 0.65rem 1rem;
-  background: #0f172a;
-  color: #ffffff;
+  padding: 0;
+  background: #ffffff;
   cursor: pointer;
-  font-weight: 700;
+}
+
+.app-header__menu span {
+  width: 1rem;
+  height: 0.12rem;
+  border-radius: 999px;
+  background: #0f172a;
+}
+
+@media (min-width: 821px) {
+  .app-header__menu.is-desktop-sidebar-visible {
+    display: none;
+  }
+}
+
+@media (max-width: 820px) {
+  .app-header {
+    padding: 0.85rem 1rem;
+  }
+
+  .app-header__menu.is-mobile-sidebar-open {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-header {
+    gap: 0.75rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.1rem;
+  }
 }
 </style>
