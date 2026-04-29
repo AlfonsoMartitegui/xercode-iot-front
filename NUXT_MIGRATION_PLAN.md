@@ -2,11 +2,11 @@
 
 ## Estado Actual
 
-- [x] Fases 1-11 completadas dentro de `frontend-nuxt/`.
+- [x] Fases 1-11 completadas inicialmente dentro de `frontend-nuxt/`.
 - [~] Fase 12 en validacion funcional manual contra backend real.
 - [x] Build Nuxt verificada con `npm run build`.
-- [x] Proyecto React original conservado como referencia de lectura.
-- [!] Fase 13 descartada para este repo: no se borra, archiva ni modifica el proyecto React original.
+- [x] Proyecto React original retirado del raiz.
+- [x] Fase 13 ejecutada el 2026-04-29: Nuxt fue promovido al raiz del repo y el scaffold React fue retirado.
 
 Notas de implementacion:
 
@@ -14,85 +14,37 @@ Notas de implementacion:
 - `pages/login.vue` contiene el formulario de login en la pagina en vez de separar `components/auth/LoginForm.vue`.
 - `TenantDomainsList.vue` quedo integrado en `TenantCard.vue`.
 - `UserRow.vue` y `UserMembershipForm.vue` quedaron integrados en `UserCard.vue` y `UserMembershipsPanel.vue`.
-- La configuracion Nuxt usa `APP_API_URL` en `frontend-nuxt/.env`; el React mantiene su propio `REACT_APP_API_URL`.
+- La configuracion Nuxt usa `APP_API_URL` en `.env`.
 
 ## Esqueleto
 
-Propuesta de destino para `frontend-nuxt/` dentro del repo actual:
+Destino actual en el raiz del repo:
 
 ```text
-frontend-nuxt/
-  app/
-    app.vue
-  nuxt.config.ts
-  package.json
-  tsconfig.json
-  public/
+app/
+  app.vue
   assets/
     css/
-      main.css
+      fonts.css
       reset.css
-      tokens.css
-      layout.css
-      forms.css
-      tables.css
-  pages/
-    login.vue
-    dashboard.vue
-    users/
-      index.vue
-    tenants/
-      index.vue
-  layouts/
-    default.vue
-    authenticated.vue
-  middleware/
-    auth.ts
-    guest.ts
-    superadmin.ts
-  composables/
-    useAuth.ts
-    useApi.ts
-    useNotifications.ts
-  services/
-    auth.service.ts
-    users.service.ts
-    tenants.service.ts
-    beaver.service.ts
-    errors.ts
-    types.ts
   components/
-    ui/
-      BaseButton.vue
-      BaseInput.vue
-      BaseCheckbox.vue
-      BaseModal.vue
-      BaseAlert.vue
-      BaseCard.vue
-      BaseSpinner.vue
-    layout/
-      AppSidebar.vue
-      AppHeader.vue
-    auth/
-      LoginForm.vue
-    tenants/
-      TenantList.vue
-      TenantCard.vue
-      TenantFormModal.vue
-      TenantDomainModal.vue
-      TenantDomainsList.vue
-    users/
-      UsersToolbar.vue
-      UsersTable.vue
-      UserRow.vue
-      UserFormModal.vue
-      UserMembershipsPanel.vue
-      UserMembershipForm.vue
-      BeaverPasswordModal.vue
+  composables/
+  constants/
+  data/
+  layouts/
+  middleware/
+  pages/
+  plugins/
+  services/
+  types/
   utils/
-    storage.ts
-    constants.ts
-    guards.ts
+public/
+  favicon.ico
+  fonts/
+  robots.txt
+nuxt.config.ts
+package.json
+tsconfig.json
 ```
 
 ## Papel De Cada Bloque
@@ -365,14 +317,14 @@ Resultado:
 - paridad funcional con el React actual
 - estado: pendiente de confirmacion manual con `npm run dev` y backend real.
 
-### 13. Retirada Del React - No aplica en este repo
+### 13. Retirada Del React - Hecho
 
 Decision actual:
 
-- no eliminar `src/`
-- no archivar ni modificar el proyecto React original
-- mantener React como referencia y fallback mientras se valida Nuxt
-- cualquier ajuste final debe ocurrir dentro de `frontend-nuxt/`
+- Nuxt queda promovido al raiz del repo.
+- `src/`, el `public/` de React y las configuraciones de CRA/Tailwind fueron retiradas.
+- `frontend-nuxt/` fue eliminado como carpeta intermedia.
+- cualquier ajuste final debe ocurrir directamente en el proyecto Nuxt del raiz.
 
 ## Mapeo Archivo Actual A Destino Nuxt
 
@@ -401,7 +353,8 @@ Decision actual:
 8. hacer tenants
 9. hacer users
 10. limpiar estados/mensajes
-11. validar Nuxt sin tocar React
+11. validar Nuxt
+12. promover Nuxt al raiz y retirar React
 
 ## Prioridad De Ejecucion
 
@@ -421,7 +374,7 @@ Si quieres que la migracion vaya suave, `Tenants` deberia ser el primer modulo f
 
 ## Decision Tecnica: No Usar Axios
 
-Propongo no anadir `axios` en `frontend-nuxt/`.
+Propongo no anadir `axios`.
 
 Motivos:
 

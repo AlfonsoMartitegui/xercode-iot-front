@@ -228,6 +228,8 @@ async function handleDomainSubmit() {
   domainModalLoading.value = true
 
   try {
+    const wasEditing = Boolean(domainModal.domainId)
+
     if (domainModal.domainId) {
       await updateTenantDomain(domainModal.tenantId, domainModal.domainId, domainForm.value)
     } else {
@@ -236,7 +238,7 @@ async function handleDomainSubmit() {
 
     resetDomainModalState()
     await loadTenants()
-    notifications.success(domainModal.domainId ? 'Dominio actualizado correctamente.' : 'Dominio creado correctamente.')
+    notifications.success(wasEditing ? 'Dominio actualizado correctamente.' : 'Dominio creado correctamente.')
   } catch (err) {
     domainModalError.value = err instanceof Error ? err.message : String(err)
   } finally {

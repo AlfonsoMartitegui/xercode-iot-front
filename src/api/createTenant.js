@@ -1,1 +1,0 @@
-export { createTenant } from "./tenants";
