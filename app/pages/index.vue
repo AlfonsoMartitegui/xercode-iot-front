@@ -24,13 +24,12 @@ const dashboardLinks = [
 <template>
   <section class="dashboard-page">
     <div class="dashboard-page__intro">
-      <h1>Dashboard</h1>
-      <p v-if="username">
+      <h1 v-if="username">
         Bienvenido, {{ username }}.
-      </p>
-      <p v-else>
+      </h1>
+      <h1 v-else>
         Bienvenido al area privada.
-      </p>
+      </h1>
     </div>
 
     <nav class="dashboard-nav" aria-label="Navegacion del dashboard">
@@ -44,7 +43,12 @@ const dashboardLinks = [
           <strong>{{ link.label }}</strong>
           <small>{{ link.description }}</small>
         </span>
-        <span class="dashboard-nav__arrow" aria-hidden="true">-></span>
+        <span class="dashboard-nav__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M5 12h14" />
+            <path d="m13 6 6 6-6 6" />
+          </svg>
+        </span>
       </NuxtLink>
     </nav>
   </section>
@@ -75,7 +79,7 @@ const dashboardLinks = [
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
-  max-width: 56rem;
+  width: 100%;
 }
 
 .dashboard-nav__item {
@@ -122,7 +126,16 @@ const dashboardLinks = [
   border-radius: 999px;
   background: var(--color-primary);
   color: var(--color-white);
-  font-weight: 800;
+}
+
+.dashboard-nav__arrow svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
 }
 
 @media (max-width: 720px) {

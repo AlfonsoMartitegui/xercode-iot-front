@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseModal from '~/components/ui/BaseModal.vue'
 import type { TenantPayload } from '~/services/types'
 
 const props = defineProps<{
@@ -25,118 +26,69 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
 </script>
 
 <template>
-  <div class="tenant-modal" role="dialog" aria-modal="true">
-    <div class="tenant-modal__panel tenant-modal__panel--wide">
-      <button class="tenant-modal__close" type="button" aria-label="Cerrar" @click="emit('close')">
-        x
+  <BaseModal :title="title" width="38rem" :z-index="50" @close="emit('close')">
+    <form class="tenant-form" @submit.prevent="emit('submit')">
+      <label>
+        <span>Nombre</span>
+        <input :value="modelValue.name" type="text" required @input="updateField('name', ($event.target as HTMLInputElement).value)">
+      </label>
+
+      <label>
+        <span>Codigo</span>
+        <input :value="modelValue.code" type="text" required @input="updateField('code', ($event.target as HTMLInputElement).value)">
+      </label>
+
+      <label>
+        <span>Direccion</span>
+        <input :value="modelValue.address" type="text" @input="updateField('address', ($event.target as HTMLInputElement).value)">
+      </label>
+
+      <label>
+        <span>Redirect URL</span>
+        <input :value="modelValue.redirect_url" type="url" placeholder="https://..." @input="updateField('redirect_url', ($event.target as HTMLInputElement).value)">
+      </label>
+
+      <label>
+        <span>Beaver Base URL</span>
+        <input :value="modelValue.beaver_base_url" type="url" placeholder="https://..." @input="updateField('beaver_base_url', ($event.target as HTMLInputElement).value)">
+      </label>
+
+      <section class="tenant-form__section">
+        <h3>Configuracion Beaver</h3>
+        <p>Datos tecnicos guardados en HUB para preparar la integracion. No ejecuta sincronizacion con Beaver.</p>
+
+        <label>
+          <span>Usuario admin Beaver</span>
+          <input :value="modelValue.beaver_admin_username" type="text" autocomplete="off" @input="updateField('beaver_admin_username', ($event.target as HTMLInputElement).value)">
+        </label>
+
+        <label>
+          <span>Password admin Beaver</span>
+          <input :value="modelValue.beaver_admin_password" type="password" autocomplete="new-password" @input="updateField('beaver_admin_password', ($event.target as HTMLInputElement).value)">
+        </label>
+
+        <small>
+          {{ isEdit ? 'Dejar vacio para conservar la password actual.' : 'Se guarda cifrada en backend y no se vuelve a mostrar.' }}
+        </small>
+      </section>
+
+      <label class="tenant-form__check">
+        <input :checked="modelValue.is_active" type="checkbox" @change="updateField('is_active', ($event.target as HTMLInputElement).checked)">
+        <span>Activo</span>
+      </label>
+
+      <p v-if="error" class="tenant-form__error">
+        {{ error }}
+      </p>
+
+      <button class="tenant-form__submit" type="submit" :disabled="loading">
+        {{ loading ? 'Guardando...' : submitLabel }}
       </button>
-
-      <h2>{{ title }}</h2>
-
-      <form class="tenant-form" @submit.prevent="emit('submit')">
-        <label>
-          <span>Nombre</span>
-          <input :value="modelValue.name" type="text" required @input="updateField('name', ($event.target as HTMLInputElement).value)">
-        </label>
-
-        <label>
-          <span>Codigo</span>
-          <input :value="modelValue.code" type="text" required @input="updateField('code', ($event.target as HTMLInputElement).value)">
-        </label>
-
-        <label>
-          <span>Direccion</span>
-          <input :value="modelValue.address" type="text" @input="updateField('address', ($event.target as HTMLInputElement).value)">
-        </label>
-
-        <label>
-          <span>Redirect URL</span>
-          <input :value="modelValue.redirect_url" type="url" placeholder="https://..." @input="updateField('redirect_url', ($event.target as HTMLInputElement).value)">
-        </label>
-
-        <label>
-          <span>Beaver Base URL</span>
-          <input :value="modelValue.beaver_base_url" type="url" placeholder="https://..." @input="updateField('beaver_base_url', ($event.target as HTMLInputElement).value)">
-        </label>
-
-        <section class="tenant-form__section">
-          <h3>Configuracion Beaver</h3>
-          <p>Datos tecnicos guardados en HUB para preparar la integracion. No ejecuta sincronizacion con Beaver.</p>
-
-          <label>
-            <span>Usuario admin Beaver</span>
-            <input :value="modelValue.beaver_admin_username" type="text" autocomplete="off" @input="updateField('beaver_admin_username', ($event.target as HTMLInputElement).value)">
-          </label>
-
-          <label>
-            <span>Password admin Beaver</span>
-            <input :value="modelValue.beaver_admin_password" type="password" autocomplete="new-password" @input="updateField('beaver_admin_password', ($event.target as HTMLInputElement).value)">
-          </label>
-
-          <small>
-            {{ isEdit ? 'Dejar vacio para conservar la password actual.' : 'Se guarda cifrada en backend y no se vuelve a mostrar.' }}
-          </small>
-        </section>
-
-        <label class="tenant-form__check">
-          <input :checked="modelValue.is_active" type="checkbox" @change="updateField('is_active', ($event.target as HTMLInputElement).checked)">
-          <span>Activo</span>
-        </label>
-
-        <p v-if="error" class="tenant-form__error">
-          {{ error }}
-        </p>
-
-        <button class="tenant-form__submit" type="submit" :disabled="loading">
-          {{ loading ? 'Guardando...' : submitLabel }}
-        </button>
-      </form>
-    </div>
-  </div>
+    </form>
+  </BaseModal>
 </template>
 
 <style scoped>
-.tenant-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: rgba(var(--color-primary-rgb), 0.52);
-}
-
-.tenant-modal__panel {
-  position: relative;
-  width: min(100%, 32rem);
-  max-height: 90vh;
-  overflow: auto;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  background: var(--color-surface-strong);
-  box-shadow: 0 24px 80px rgba(var(--color-primary-rgb), 0.25);
-}
-
-.tenant-modal__panel--wide {
-  width: min(100%, 38rem);
-}
-
-.tenant-modal__close {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  border: 0;
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: 1.1rem;
-}
-
-.tenant-modal h2 {
-  margin: 0 2rem 1rem 0;
-  color: var(--color-heading);
-}
-
 .tenant-form {
   display: grid;
   gap: 1rem;

@@ -59,7 +59,11 @@ async function handleSubmit() {
 <template>
   <div class="login-page">
     <div class="login-card">
-      <h1>Iniciar sesion</h1>
+      <img
+        class="login-card__logo"
+        src="/images/xercode.svg"
+        alt="Xercode"
+      >
       <form class="login-form" @submit.prevent="handleSubmit">
         <label>
           <span>Usuario</span>
@@ -108,6 +112,13 @@ async function handleSubmit() {
   border: 1px solid rgba(var(--color-primary-rgb), 0.1);
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 25px 60px rgba(var(--color-primary-rgb), 0.14);
+}
+
+.login-card__logo {
+  display: block;
+  width: min(13rem, 100%);
+  height: auto;
+  margin: 0 auto 1.5rem;
 }
 
 .login-card h1 {

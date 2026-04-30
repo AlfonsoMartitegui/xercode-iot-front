@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseModal from '~/components/ui/BaseModal.vue'
 import type { TenantDomainPayload } from '~/services/types'
 
 const props = defineProps<{
@@ -24,75 +25,32 @@ function updateField<Key extends keyof TenantDomainPayload>(field: Key, value: T
 </script>
 
 <template>
-  <div class="domain-modal" role="dialog" aria-modal="true">
-    <div class="domain-modal__panel">
-      <button class="domain-modal__close" type="button" aria-label="Cerrar" @click="emit('close')">
-        x
+  <BaseModal :title="title" width="30rem" :z-index="50" @close="emit('close')">
+    <form class="domain-form" @submit.prevent="emit('submit')">
+      <label>
+        <span>Dominio</span>
+        <input :value="modelValue.domain" type="text" placeholder="cliente.midominio.com" required @input="updateField('domain', ($event.target as HTMLInputElement).value)">
+      </label>
+
+      <small>El backend normaliza el dominio sin protocolo ni path.</small>
+
+      <label class="domain-form__check">
+        <input :checked="modelValue.is_primary" type="checkbox" @change="updateField('is_primary', ($event.target as HTMLInputElement).checked)">
+        <span>Dominio principal</span>
+      </label>
+
+      <p v-if="error" class="domain-form__error">
+        {{ error }}
+      </p>
+
+      <button class="domain-form__submit" type="submit" :disabled="loading">
+        {{ loading ? 'Guardando...' : submitLabel }}
       </button>
-
-      <h2>{{ title }}</h2>
-
-      <form class="domain-form" @submit.prevent="emit('submit')">
-        <label>
-          <span>Dominio</span>
-          <input :value="modelValue.domain" type="text" placeholder="cliente.midominio.com" required @input="updateField('domain', ($event.target as HTMLInputElement).value)">
-        </label>
-
-        <small>El backend normaliza el dominio sin protocolo ni path.</small>
-
-        <label class="domain-form__check">
-          <input :checked="modelValue.is_primary" type="checkbox" @change="updateField('is_primary', ($event.target as HTMLInputElement).checked)">
-          <span>Dominio principal</span>
-        </label>
-
-        <p v-if="error" class="domain-form__error">
-          {{ error }}
-        </p>
-
-        <button class="domain-form__submit" type="submit" :disabled="loading">
-          {{ loading ? 'Guardando...' : submitLabel }}
-        </button>
-      </form>
-    </div>
-  </div>
+    </form>
+  </BaseModal>
 </template>
 
 <style scoped>
-.domain-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: rgba(var(--color-primary-rgb), 0.52);
-}
-
-.domain-modal__panel {
-  position: relative;
-  width: min(100%, 30rem);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  background: var(--color-surface-strong);
-  box-shadow: 0 24px 80px rgba(var(--color-primary-rgb), 0.25);
-}
-
-.domain-modal__close {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  border: 0;
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: 1.1rem;
-}
-
-.domain-modal h2 {
-  margin: 0 2rem 1rem 0;
-  color: var(--color-heading);
-}
-
 .domain-form {
   display: grid;
   gap: 1rem;

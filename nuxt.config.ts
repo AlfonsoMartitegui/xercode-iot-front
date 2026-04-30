@@ -19,6 +19,16 @@ export default defineNuxtConfig({
           type: "font/ttf",
           crossorigin: "anonymous",
         },
+        {
+          rel: "icon",
+          type: "image/svg+xml",
+          href: "/images/xercode_isotipo.svg",
+        },
+        {
+          rel: "alternate icon",
+          type: "image/png",
+          href: "/images/favicon.png",
+        },
       ]
     }
   },

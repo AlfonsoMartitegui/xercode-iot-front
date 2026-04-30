@@ -13,7 +13,7 @@ const auth = useAuth()
 
 const links = [
   { label: 'Tenants', to: '/tenants' },
-  { label: 'Users', to: '/users' },
+  { label: 'Usuarios', to: '/users' },
 ]
 </script>
 

@@ -3,9 +3,11 @@ withDefaults(
   defineProps<{
     title: string
     width?: string
+    zIndex?: number | string
   }>(),
   {
     width: '36rem',
+    zIndex: 45,
   },
 )
 
@@ -15,7 +17,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="base-modal" role="dialog" aria-modal="true">
+  <div class="base-modal" role="dialog" aria-modal="true" :style="{ '--base-modal-z-index': zIndex }">
     <div class="base-modal__panel" :style="{ '--base-modal-width': width }">
       <button class="base-modal__close" type="button" aria-label="Cerrar" @click="emit('close')">
         x
@@ -32,7 +34,7 @@ const emit = defineEmits<{
 .base-modal {
   position: fixed;
   inset: 0;
-  z-index: 45;
+  z-index: var(--base-modal-z-index);
   display: grid;
   place-items: center;
   padding: 1rem;
