@@ -77,12 +77,12 @@ function getRoleValue(role: BeaverRole) {
       </label>
 
       <label>
-        <span>Contrasena</span>
+        <span>Contraseña</span>
         <input :value="modelValue.password" type="password" required @input="updateField('password', ($event.target as HTMLInputElement).value)">
       </label>
 
       <label>
-        <span>Confirmar contrasena</span>
+        <span>Confirmar contraseña</span>
         <input :value="modelValue.confirmPassword" type="password" required @input="updateField('confirmPassword', ($event.target as HTMLInputElement).value)">
       </label>
 
@@ -97,7 +97,7 @@ function getRoleValue(role: BeaverRole) {
       </label>
 
       <section v-if="!modelValue.is_superadmin" class="user-form__membership">
-        <h3>Membresia inicial</h3>
+        <h3>Membresía inicial</h3>
 
         <label>
           <span>Tenant</span>
@@ -140,7 +140,7 @@ function getRoleValue(role: BeaverRole) {
 
         <label class="user-form__check">
           <input :checked="modelValue.membership.is_active" type="checkbox" @change="updateMembership('is_active', ($event.target as HTMLInputElement).checked)">
-          <span>Membresia activa</span>
+          <span>Membresía activa</span>
         </label>
       </section>
 

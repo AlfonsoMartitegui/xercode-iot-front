@@ -199,7 +199,7 @@ async function handleModalSubmit() {
   }
 
   if (form.value.password !== form.value.confirmPassword) {
-    modalError.value = 'Las contrasenas no coinciden.'
+    modalError.value = 'Las contraseñas no coinciden.'
     return
   }
 
@@ -235,7 +235,7 @@ async function handleModalSubmit() {
     const createdUserId = Number(createdUser.id || (createdUser.user as User | undefined)?.id || createdUser.user_id)
 
     if (!createdUserId) {
-      throw new Error('Usuario creado, pero no se pudo obtener su ID para crear la membresia.')
+      throw new Error('Usuario creado, pero no se pudo obtener su ID para crear la membresía.')
     }
 
     if (!isSuperadmin) {
@@ -252,7 +252,7 @@ async function handleModalSubmit() {
         } catch {
           resetCreateModal()
           await loadUsers()
-          notifications.error('Usuario creado en HUB y membresia guardada, pero no se pudo provisionar en Beaver. Puedes reintentar.')
+          notifications.error('Usuario creado en HUB y membresía guardada, pero no se pudo provisionar en Beaver. Puedes reintentar.')
           return
         }
       }
@@ -301,7 +301,7 @@ onMounted(loadInitialData)
         <strong>{{ superadminUsers }}</strong>
       </article>
       <article>
-        <span>Membresias</span>
+        <span>Membresías</span>
         <strong>{{ totalMemberships }}</strong>
       </article>
     </section> -->

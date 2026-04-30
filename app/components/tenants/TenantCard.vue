@@ -36,7 +36,7 @@ const emit = defineEmits<{
 
     <dl>
       <div>
-        <dt>Codigo</dt>
+        <dt>Código</dt>
         <dd>{{ tenant.code }}</dd>
       </div>
       <div>
@@ -44,7 +44,7 @@ const emit = defineEmits<{
         <dd>{{ tenant.id }}</dd>
       </div>
       <div>
-        <dt>Direccion</dt>
+        <dt>Dirección</dt>
         <dd>{{ tenant.address || 'No definida' }}</dd>
       </div>
       <div>
@@ -65,7 +65,7 @@ const emit = defineEmits<{
       <div class="tenant-card__domains-head">
         <h3>Dominios</h3>
         <button type="button" @click="emit('addDomain', tenant.id)">
-          Anadir dominio
+          Añadir dominio
         </button>
       </div>
 

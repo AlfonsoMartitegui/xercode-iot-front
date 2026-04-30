@@ -116,7 +116,7 @@ async function handleModalSubmit() {
   modalError.value = ''
 
   if (!form.value.name || !form.value.code) {
-    modalError.value = 'Nombre y codigo son obligatorios.'
+    modalError.value = 'Nombre y código son obligatorios.'
     return
   }
 
@@ -270,7 +270,7 @@ onMounted(loadTenants)
     <template #toolbar>
       <header class="tenants-page__toolbar">
         <button type="button" @click="openCreateModal">
-          Anadir tenant
+          Añadir tenant
         </button>
       </header>
     </template>
@@ -299,7 +299,7 @@ onMounted(loadTenants)
   <TenantFormModal
     v-if="showCreateModal"
     v-model="form"
-    title="Anadir tenant"
+    title="Añadir tenant"
     submit-label="Crear tenant"
     :loading="modalLoading"
     :error="modalError"
@@ -322,7 +322,7 @@ onMounted(loadTenants)
   <TenantDomainModal
     v-if="domainModal.open"
     v-model="domainForm"
-    :title="domainModal.domainId ? 'Editar dominio' : 'Anadir dominio'"
+    :title="domainModal.domainId ? 'Editar dominio' : 'Añadir dominio'"
     :submit-label="domainModal.domainId ? 'Guardar dominio' : 'Crear dominio'"
     :loading="domainModalLoading"
     :error="domainModalError"

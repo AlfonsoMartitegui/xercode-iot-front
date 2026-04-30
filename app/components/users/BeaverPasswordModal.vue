@@ -21,25 +21,25 @@ const isProvision = computed(() => props.mode === 'provision')
 
 <template>
   <BaseModal
-    :title="isProvision ? 'Provisionar Beaver' : 'Cambiar contrasena Beaver'"
+    :title="isProvision ? 'Provisionar Beaver' : 'Cambiar contraseña Beaver'"
     width="30rem"
     :z-index="60"
     @close="emit('close')"
   >
     <p class="password-form__description">
       {{ isProvision
-        ? 'Esta accion crea o asocia la cuenta del usuario en Beaver usando el tenant seleccionado.'
-        : 'Esta accion cambia la contrasena del usuario en Beaver usando el tenant seleccionado.' }}
+        ? 'Esta acción crea o asocia la cuenta del usuario en Beaver usando el tenant seleccionado.'
+        : 'Esta acción cambia la contraseña del usuario en Beaver usando el tenant seleccionado.' }}
     </p>
 
     <form class="password-form" @submit.prevent="emit('submit')">
       <label>
-        <span>Nueva contrasena</span>
+        <span>Nueva contraseña</span>
         <input :value="password" type="password" required @input="emit('update:password', ($event.target as HTMLInputElement).value)">
       </label>
 
       <label>
-        <span>Confirmar contrasena</span>
+        <span>Confirmar contraseña</span>
         <input :value="confirmPassword" type="password" required @input="emit('update:confirmPassword', ($event.target as HTMLInputElement).value)">
       </label>
 
@@ -48,7 +48,7 @@ const isProvision = computed(() => props.mode === 'provision')
       </p>
 
       <button type="submit" :disabled="loading">
-        {{ loading ? (isProvision ? 'Provisionando...' : 'Cambiando...') : (isProvision ? 'Provisionar Beaver' : 'Cambiar contrasena') }}
+        {{ loading ? (isProvision ? 'Provisionando...' : 'Cambiando...') : (isProvision ? 'Provisionar Beaver' : 'Cambiar contraseña') }}
       </button>
     </form>
   </BaseModal>

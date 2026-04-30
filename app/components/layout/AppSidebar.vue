@@ -33,12 +33,12 @@ const links = [
         <img src="/images/xercode_negativo.svg" alt="Xercode" width="330" height="110">
       </NuxtLink>
 
-      <button type="button" aria-label="Cerrar navegacion" @click="emit('close')">
+      <button type="button" aria-label="Cerrar navegación" @click="emit('close')">
         x
       </button>
     </div>
 
-    <nav aria-label="Navegacion privada">
+    <nav aria-label="Navegación privada">
       <NuxtLink
         v-for="link in links"
         :key="link.to"
@@ -51,13 +51,13 @@ const links = [
 
     <div class="app-sidebar__account">
       <div>
-        <span>Area privada</span>
+        <span>Área privada</span>
         <strong v-if="auth.user.value?.username">{{ auth.user.value.username }}</strong>
         <strong v-else>Xercode IoT</strong>
       </div>
 
       <button type="button" @click="auth.signOut()">
-        Cerrar sesion
+        Cerrar sesión
       </button>
     </div>
   </aside>
