@@ -215,11 +215,11 @@ function getRolesError(tenantId?: number | string) {
 
 .memberships p {
   margin: 0;
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .memberships__table {
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 14px 34px rgba(var(--color-primary-rgb), 0.07);
 }
 
 .memberships__table :deep(.is-actions-cell) {
@@ -230,16 +230,16 @@ function getRolesError(tenantId?: number | string) {
   border: 0;
   border-radius: 0.65rem;
   padding: 0.55rem 0.7rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 700;
 }
 
 .memberships button:disabled {
-  background: #cbd5e1;
-  color: #475569;
+  background: var(--color-gray-300);
+  color: var(--color-gray-700);
   cursor: not-allowed;
 }
 
@@ -251,11 +251,11 @@ function getRolesError(tenantId?: number | string) {
 
 .memberships__select {
   width: 8rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.65rem;
   padding: 0.55rem 0.65rem;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--color-white);
+  color: var(--color-text);
   font: inherit;
 }
 
@@ -276,31 +276,31 @@ function getRolesError(tenantId?: number | string) {
 }
 
 .memberships__actions .amber {
-  background: #d97706;
+  background: var(--color-warning);
 }
 
 .memberships__actions .green {
-  background: #059669;
+  background: var(--color-success);
 }
 
 .memberships__actions .danger {
-  background: #dc2626;
+  background: var(--color-error);
 }
 
 .memberships__info {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 0.8rem;
   padding: 0.8rem;
-  background: #f8fafc;
+  background: var(--color-surface);
 }
 
 .memberships__error {
-  color: #b91c1c !important;
+  color: var(--color-error) !important;
 }
 
 .memberships__muted,
 .memberships__empty {
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
 
 .membership-card {
@@ -315,7 +315,7 @@ function getRolesError(tenantId?: number | string) {
 
 .membership-card h2 {
   margin: 0;
-  color: #1d4ed8;
+  color: var(--color-primary);
   font-size: 1.08rem;
   overflow-wrap: anywhere;
 }
@@ -332,7 +332,7 @@ function getRolesError(tenantId?: number | string) {
 }
 
 .membership-card dt {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.76rem;
   font-weight: 800;
   text-transform: uppercase;

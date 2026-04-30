@@ -62,7 +62,7 @@ const isProvision = computed(() => props.mode === 'provision')
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(15, 23, 42, 0.52);
+  background: rgba(var(--color-primary-rgb), 0.52);
 }
 
 .password-modal__panel {
@@ -70,8 +70,8 @@ const isProvision = computed(() => props.mode === 'provision')
   width: min(100%, 30rem);
   border-radius: 1rem;
   padding: 1.5rem;
-  background: #ffffff;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  background: var(--color-surface-strong);
+  box-shadow: 0 24px 80px rgba(var(--color-primary-rgb), 0.25);
 }
 
 .password-modal__close {
@@ -80,7 +80,7 @@ const isProvision = computed(() => props.mode === 'provision')
   right: 0.75rem;
   border: 0;
   background: transparent;
-  color: #64748b;
+  color: var(--color-text-muted);
   cursor: pointer;
   font-size: 1.1rem;
 }
@@ -91,7 +91,7 @@ const isProvision = computed(() => props.mode === 'provision')
 }
 
 .password-modal p {
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .password-form {
@@ -106,22 +106,22 @@ const isProvision = computed(() => props.mode === 'provision')
 
 .password-form input {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.65rem;
   padding: 0.75rem 0.85rem;
 }
 
 .password-form__error {
   margin: 0;
-  color: #b91c1c;
+  color: var(--color-error);
 }
 
 .password-form button {
   border: 0;
   border-radius: 0.75rem;
   padding: 0.85rem 1rem;
-  background: #d97706;
-  color: #ffffff;
+  background: var(--color-warning);
+  color: var(--color-white);
   cursor: pointer;
   font-weight: 700;
 }

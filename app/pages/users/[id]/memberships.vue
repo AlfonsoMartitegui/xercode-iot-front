@@ -447,8 +447,8 @@ watchEffect(() => {
   min-height: 2.5rem;
   border-radius: 0.75rem;
   padding: 0.7rem 1rem;
-  background: #e2e8f0;
-  color: #0f172a;
+  background: var(--color-primary-lighter);
+  color: var(--color-primary-darker);
   font-weight: 800;
   text-decoration: none;
   white-space: nowrap;
@@ -462,8 +462,8 @@ watchEffect(() => {
   border: 0;
   border-radius: 0.75rem;
   padding: 0.7rem 1rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   font-weight: 700;
   white-space: nowrap;

@@ -120,15 +120,16 @@ function getRoleValue(role: BeaverRole) {
 
 .membership-form select {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.65rem;
   padding: 0.75rem 0.85rem;
-  background: #ffffff;
+  background: var(--color-white);
+  color: var(--color-text);
 }
 
 .membership-form p {
   margin: 0;
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .membership-form__check {
@@ -142,15 +143,15 @@ function getRoleValue(role: BeaverRole) {
 }
 
 .membership-form__error {
-  color: #b91c1c !important;
+  color: var(--color-error) !important;
 }
 
 .membership-form__submit {
   border: 0;
   border-radius: 0.75rem;
   padding: 0.85rem 1rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   font-weight: 700;
 }

@@ -103,7 +103,7 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(15, 23, 42, 0.52);
+  background: rgba(var(--color-primary-rgb), 0.52);
 }
 
 .tenant-modal__panel {
@@ -113,8 +113,8 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
   overflow: auto;
   border-radius: 1rem;
   padding: 1.5rem;
-  background: #ffffff;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  background: var(--color-surface-strong);
+  box-shadow: 0 24px 80px rgba(var(--color-primary-rgb), 0.25);
 }
 
 .tenant-modal__panel--wide {
@@ -127,13 +127,14 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
   right: 0.75rem;
   border: 0;
   background: transparent;
-  color: #64748b;
+  color: var(--color-text-muted);
   cursor: pointer;
   font-size: 1.1rem;
 }
 
 .tenant-modal h2 {
   margin: 0 2rem 1rem 0;
+  color: var(--color-heading);
 }
 
 .tenant-form {
@@ -148,18 +149,24 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
 
 .tenant-form input {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.65rem;
   padding: 0.75rem 0.85rem;
+  color: var(--color-text);
+}
+
+.tenant-form input:focus {
+  outline: 3px solid var(--color-focus);
+  border-color: var(--color-secondary);
 }
 
 .tenant-form__section {
   display: grid;
   gap: 0.9rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 0.9rem;
   padding: 1rem;
-  background: #f8fafc;
+  background: var(--color-surface);
 }
 
 .tenant-form__section h3,
@@ -169,7 +176,7 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
 
 .tenant-form__section p,
 .tenant-form__section small {
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .tenant-form__check {
@@ -183,15 +190,15 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
 
 .tenant-form__error {
   margin: 0;
-  color: #b91c1c;
+  color: var(--color-error);
 }
 
 .tenant-form__submit {
   border: 0;
   border-radius: 0.75rem;
   padding: 0.85rem 1rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   font-weight: 700;
   cursor: pointer;
 }

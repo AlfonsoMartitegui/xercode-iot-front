@@ -87,9 +87,9 @@ watch(
   grid-template-columns: 16rem minmax(0, 1fr);
   min-height: 100vh;
   background:
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 32rem),
-    #f8fafc;
-  color: #1f2937;
+    radial-gradient(circle at top right, rgba(var(--color-secondary-rgb), 0.22), transparent 32rem),
+    linear-gradient(180deg, var(--color-primary-lighter) 0%, var(--color-surface) 18rem);
+  color: var(--color-text);
 }
 
 .authenticated-layout.is-sidebar-hidden {
@@ -126,7 +126,7 @@ watch(
     display: block;
     border: 0;
     padding: 0;
-    background: rgba(15, 23, 42, 0.48);
+    background: rgba(var(--color-primary-rgb), 0.48);
     cursor: pointer;
   }
 

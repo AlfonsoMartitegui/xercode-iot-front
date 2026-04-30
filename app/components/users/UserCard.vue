@@ -89,11 +89,11 @@ const emit = defineEmits<{
   position: relative;
   display: grid;
   gap: 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1rem;
-  background: #ffffff;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  background: var(--color-surface-strong);
+  box-shadow: 0 16px 40px rgba(var(--color-primary-rgb), 0.08);
 }
 
 .user-card__save {
@@ -103,8 +103,8 @@ const emit = defineEmits<{
   border: 0;
   border-radius: 999px;
   padding: 0.45rem 0.75rem;
-  background: #16a34a;
-  color: #ffffff;
+  background: var(--color-success);
+  color: var(--color-white);
   cursor: pointer;
   font-weight: 700;
 }
@@ -122,21 +122,21 @@ const emit = defineEmits<{
 }
 
 .user-card h2 {
-  color: #1d4ed8;
+  color: var(--color-primary);
   font-size: 1.2rem;
 }
 
 .user-card__title span {
   border-radius: 999px;
   padding: 0.25rem 0.55rem;
-  background: #fde68a;
-  color: #713f12;
+  background: var(--color-warning-light);
+  color: var(--color-warning);
   font-size: 0.75rem;
   font-weight: 800;
 }
 
 .user-card__email {
-  color: #334155;
+  color: var(--color-gray-700);
 }
 
 .user-card__active {
@@ -146,12 +146,12 @@ const emit = defineEmits<{
 }
 
 .user-card__active small {
-  color: #dc2626;
+  color: var(--color-error);
 }
 
 .user-card__meta,
 .user-card__tenants {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
 }
 

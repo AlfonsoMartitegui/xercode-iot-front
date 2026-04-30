@@ -36,7 +36,7 @@ const emit = defineEmits<{
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(15, 23, 42, 0.52);
+  background: rgba(var(--color-primary-rgb), 0.52);
 }
 
 .base-modal__panel {
@@ -46,8 +46,8 @@ const emit = defineEmits<{
   overflow: auto;
   border-radius: 1rem;
   padding: 1.5rem;
-  background: #ffffff;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  background: var(--color-surface-strong);
+  box-shadow: 0 24px 80px rgba(var(--color-primary-rgb), 0.25);
 }
 
 .base-modal__close {
@@ -58,13 +58,14 @@ const emit = defineEmits<{
   border: 0;
   padding: 0.2rem;
   background: transparent;
-  color: #64748b;
+  color: var(--color-text-muted);
   cursor: pointer;
   font-size: 1.1rem;
 }
 
 .base-modal h2 {
   margin: 0 2rem 1rem 0;
+  color: var(--color-heading);
 }
 
 @media (max-width: 640px) {

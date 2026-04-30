@@ -71,8 +71,8 @@ const links = [
   gap: 2rem;
   min-height: 100vh;
   padding: 1.25rem;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--color-primary-darker);
+  color: var(--color-white);
 }
 
 .app-sidebar__brand {
@@ -99,7 +99,7 @@ const links = [
 }
 
 .app-sidebar__brand-link span {
-  color: #94a3b8;
+  color: var(--color-secondary-light);
   font-size: 0.85rem;
 }
 
@@ -109,11 +109,11 @@ const links = [
   flex: 0 0 2rem;
   width: 2rem;
   height: 2rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid rgba(var(--color-secondary-rgb), 0.42);
   border-radius: 0.55rem;
   padding: 0;
   background: transparent;
-  color: #ffffff;
+  color: var(--color-white);
   cursor: pointer;
   font-size: 1rem;
   font-weight: 800;
@@ -128,21 +128,21 @@ const links = [
 .app-sidebar a {
   border-radius: 0.8rem;
   padding: 0.75rem 0.85rem;
-  color: #cbd5e1;
+  color: var(--color-primary-lighter);
   text-decoration: none;
 }
 
 .app-sidebar a:hover,
 .app-sidebar a.is-active {
-  background: #1e293b;
-  color: #ffffff;
+  background: rgba(var(--color-secondary-rgb), 0.2);
+  color: var(--color-white);
 }
 
 .app-sidebar__account {
   display: grid;
   gap: 0.85rem;
   margin-top: auto;
-  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  border-top: 1px solid rgba(var(--color-secondary-rgb), 0.26);
   padding-top: 1rem;
 }
 
@@ -153,7 +153,7 @@ const links = [
 }
 
 .app-sidebar__account span {
-  color: #94a3b8;
+  color: var(--color-secondary-light);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -171,8 +171,8 @@ const links = [
   border: 0;
   border-radius: 0.7rem;
   padding: 0.7rem 0.85rem;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--color-white);
+  color: var(--color-primary-darker);
   cursor: pointer;
   font-weight: 700;
 }
@@ -191,7 +191,7 @@ const links = [
     width: min(20rem, calc(100vw - 3rem));
     min-height: 100vh;
     transform: translateX(-100%);
-    box-shadow: 18px 0 40px rgba(15, 23, 42, 0.28);
+    box-shadow: 18px 0 40px rgba(var(--color-primary-rgb), 0.32);
     transition: transform 180ms ease;
   }
 

@@ -344,8 +344,8 @@ onMounted(loadTenants)
   border: 0;
   border-radius: 0.75rem;
   padding: 0.8rem 1rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   font-weight: 700;
 }
@@ -359,21 +359,21 @@ onMounted(loadTenants)
 .tenants-summary article {
   display: grid;
   gap: 0.35rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   padding: 1rem;
-  background: #ffffff;
+  background: var(--color-surface-strong);
 }
 
 .tenants-summary span {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.82rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .tenants-summary strong {
-  color: #0f172a;
+  color: var(--color-heading);
   font-size: 1.65rem;
 }
 

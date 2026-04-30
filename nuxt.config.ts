@@ -7,14 +7,14 @@ export default defineNuxtConfig({
       link: [
         {
           rel: "preload",
-          href: "/fonts/Gobold_Thin.ttf",
+          href: "/fonts/Roboto-VariableFont_wdth,wght.ttf",
           as: "font",
           type: "font/ttf",
           crossorigin: "anonymous",
         },
         {
           rel: "preload",
-          href: "/fonts/Roboto-VariableFont_wdth,wght.ttf",
+          href: "/fonts/Gobold_Thin.ttf",
           as: "font",
           type: "font/ttf",
           crossorigin: "anonymous",
@@ -25,6 +25,7 @@ export default defineNuxtConfig({
   css: [
     "@/assets/css/fonts.css",
     "@/assets/css/reset.css",
+    "@/assets/css/style.css",
   ],
   runtimeConfig: {
     public: {

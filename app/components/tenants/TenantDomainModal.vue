@@ -65,7 +65,7 @@ function updateField<Key extends keyof TenantDomainPayload>(field: Key, value: T
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(15, 23, 42, 0.52);
+  background: rgba(var(--color-primary-rgb), 0.52);
 }
 
 .domain-modal__panel {
@@ -73,8 +73,8 @@ function updateField<Key extends keyof TenantDomainPayload>(field: Key, value: T
   width: min(100%, 30rem);
   border-radius: 1rem;
   padding: 1.5rem;
-  background: #ffffff;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  background: var(--color-surface-strong);
+  box-shadow: 0 24px 80px rgba(var(--color-primary-rgb), 0.25);
 }
 
 .domain-modal__close {
@@ -83,13 +83,14 @@ function updateField<Key extends keyof TenantDomainPayload>(field: Key, value: T
   right: 0.75rem;
   border: 0;
   background: transparent;
-  color: #64748b;
+  color: var(--color-text-muted);
   cursor: pointer;
   font-size: 1.1rem;
 }
 
 .domain-modal h2 {
   margin: 0 2rem 1rem 0;
+  color: var(--color-heading);
 }
 
 .domain-form {
@@ -104,13 +105,19 @@ function updateField<Key extends keyof TenantDomainPayload>(field: Key, value: T
 
 .domain-form input {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.65rem;
   padding: 0.75rem 0.85rem;
+  color: var(--color-text);
+}
+
+.domain-form input:focus {
+  outline: 3px solid var(--color-focus);
+  border-color: var(--color-secondary);
 }
 
 .domain-form small {
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .domain-form__check {
@@ -124,15 +131,15 @@ function updateField<Key extends keyof TenantDomainPayload>(field: Key, value: T
 
 .domain-form__error {
   margin: 0;
-  color: #b91c1c;
+  color: var(--color-error);
 }
 
 .domain-form__submit {
   border: 0;
   border-radius: 0.75rem;
   padding: 0.85rem 1rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   font-weight: 700;
   cursor: pointer;
 }

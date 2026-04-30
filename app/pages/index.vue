@@ -63,6 +63,7 @@ const dashboardLinks = [
 
 .dashboard-page h1 {
   margin: 0;
+  color: var(--color-heading);
   font-size: 2rem;
 }
 
@@ -83,17 +84,17 @@ const dashboardLinks = [
   justify-content: space-between;
   gap: 1rem;
   min-height: 8rem;
-  border: 1px solid #dbe4ee;
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 1.25rem;
-  background: #ffffff;
-  color: #1f2937;
+  background: var(--color-surface-strong);
+  color: var(--color-text);
   text-decoration: none;
-  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 14px 35px rgba(var(--color-primary-rgb), 0.08);
 }
 
 .dashboard-nav__item:hover {
-  border-color: #38bdf8;
+  border-color: var(--color-secondary);
   transform: translateY(-1px);
 }
 
@@ -107,7 +108,7 @@ const dashboardLinks = [
 }
 
 .dashboard-nav__item small {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.92rem;
   line-height: 1.45;
 }
@@ -119,8 +120,8 @@ const dashboardLinks = [
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 999px;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   font-weight: 800;
 }
 

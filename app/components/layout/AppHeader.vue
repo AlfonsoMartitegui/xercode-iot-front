@@ -56,7 +56,7 @@ const pageDescription = computed(() => String(route.meta.description || ''))
   gap: 1rem;
   padding: 1rem 1.5rem;
   background: rgba(255, 255, 255, 0.92);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border);
   backdrop-filter: blur(12px);
 }
 
@@ -70,7 +70,7 @@ const pageDescription = computed(() => String(route.meta.description || ''))
 .app-header h1 {
   margin: 0;
   overflow: hidden;
-  color: #0f172a;
+  color: var(--color-heading);
   font-size: 1.25rem;
   line-height: 1.2;
   text-overflow: ellipsis;
@@ -86,7 +86,7 @@ const pageDescription = computed(() => String(route.meta.description || ''))
 .app-header__title p {
   margin: 0;
   overflow: hidden;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.88rem;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -102,10 +102,10 @@ const pageDescription = computed(() => String(route.meta.description || ''))
   flex: 0 0 2.5rem;
   width: 2.5rem;
   height: 2.5rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border);
   border-radius: 0.7rem;
   padding: 0;
-  background: #ffffff;
+  background: var(--color-white);
   cursor: pointer;
 }
 
@@ -113,7 +113,7 @@ const pageDescription = computed(() => String(route.meta.description || ''))
   width: 1rem;
   height: 0.12rem;
   border-radius: 999px;
-  background: #0f172a;
+  background: var(--color-primary);
 }
 
 @media (min-width: 821px) {

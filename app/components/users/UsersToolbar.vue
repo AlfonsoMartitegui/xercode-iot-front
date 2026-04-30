@@ -165,11 +165,11 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
   gap: 0.75rem;
   width: 100%;
   min-height: 3.15rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.75rem;
   padding: 0.75rem 0.9rem;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--color-white);
+  color: var(--color-text);
   font: inherit;
   font-weight: 500;
   outline: none;
@@ -179,8 +179,8 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
 
 .users-toolbar__select:focus,
 .users-toolbar__select[aria-expanded='true'] {
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.28);
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px var(--color-focus);
 }
 
 .users-toolbar__select span:first-child {
@@ -194,7 +194,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
   justify-self: end;
   width: 1rem;
   height: 1rem;
-  color: #475569;
+  color: var(--color-gray-700);
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -208,7 +208,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
 }
 
 .users-toolbar__select .is-placeholder {
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .users-toolbar button {
@@ -220,8 +220,8 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
   border: 0;
   border-radius: 0.75rem;
   padding: 0.7rem 1rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   font-weight: 700;
   white-space: nowrap;
@@ -235,10 +235,10 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
   gap: 0.75rem;
   width: 100%;
   min-height: 3.15rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   padding: 0.75rem 0.9rem;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--color-white);
+  color: var(--color-text);
 }
 
 .users-toolbar__dropdown {
@@ -249,26 +249,26 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
   display: grid;
   gap: 0.6rem;
   width: 100%;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   padding: 0.65rem;
-  background: #ffffff;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  background: var(--color-surface-strong);
+  box-shadow: 0 18px 42px rgba(var(--color-primary-rgb), 0.16);
 }
 
 .users-toolbar__dropdown input {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.6rem;
   padding: 0.65rem 0.75rem;
-  color: #0f172a;
+  color: var(--color-text);
   font: inherit;
   outline: none;
 }
 
 .users-toolbar__dropdown input:focus {
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.22);
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px var(--color-focus);
 }
 
 .users-toolbar__options {
@@ -282,14 +282,14 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
   min-height: 2.45rem;
   border-radius: 0.55rem;
   padding: 0.45rem 0.55rem;
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--color-white);
+  color: var(--color-text);
   font-weight: 600;
 }
 
 .users-toolbar button.users-toolbar__option:hover,
 .users-toolbar button.users-toolbar__option[aria-selected='true'] {
-  background: #eff6ff;
+  background: var(--color-primary-lighter);
 }
 
 .users-toolbar__check {
@@ -298,9 +298,9 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
   flex: 0 0 1.1rem;
   width: 1.1rem;
   height: 1.1rem;
-  border: 1px solid #bfdbfe;
+  border: 1px solid var(--color-info-border);
   border-radius: 0.35rem;
-  color: #1d4ed8;
+  color: var(--color-primary);
   font-size: 0.75rem;
   font-weight: 900;
 }
@@ -308,14 +308,14 @@ onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick)
 .users-toolbar__empty {
   margin: 0;
   padding: 0.65rem;
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .users-toolbar button.users-toolbar__clear {
   min-height: 2.25rem;
   border-radius: 0.6rem;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
 }
 
 @media (max-width: 720px) {

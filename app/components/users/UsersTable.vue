@@ -147,26 +147,26 @@ const emit = defineEmits<{
 }
 
 .users-list__desktop-table {
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 14px 34px rgba(var(--color-primary-rgb), 0.07);
 }
 
 .users-list__badge {
   display: inline-flex;
   border-radius: 999px;
   padding: 0.25rem 0.55rem;
-  background: #e2e8f0;
-  color: #334155;
+  background: var(--color-gray-200);
+  color: var(--color-gray-700);
   font-size: 0.75rem;
   font-weight: 800;
 }
 
 .users-list__badge.is-superadmin {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-light);
+  color: var(--color-warning);
 }
 
 .users-list__link {
-  color: #1d4ed8;
+  color: var(--color-primary);
   font-weight: 800;
   text-decoration: none;
 }
@@ -191,23 +191,23 @@ const emit = defineEmits<{
   border: 0;
   border-radius: 0.65rem;
   padding: 0.55rem 0.75rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   font-weight: 800;
 }
 
 .users-list button.users-list__noop-button,
 .user-card button.users-list__noop-button {
-  background: #e2e8f0;
-  color: #64748b;
+  background: var(--color-gray-200);
+  color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
 .users-list button:disabled,
 .user-card button:disabled {
-  background: #cbd5e1;
-  color: #475569;
+  background: var(--color-gray-300);
+  color: var(--color-gray-700);
   cursor: not-allowed;
 }
 
@@ -235,13 +235,13 @@ const emit = defineEmits<{
 }
 
 .user-card h2 {
-  color: #1d4ed8;
+  color: var(--color-primary);
   font-size: 1.1rem;
 }
 
 .user-card p {
   margin-top: 0.25rem;
-  color: #475569;
+  color: var(--color-gray-700);
 }
 
 .user-card dl {
@@ -256,7 +256,7 @@ const emit = defineEmits<{
 }
 
 .user-card dt {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.76rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -268,11 +268,11 @@ const emit = defineEmits<{
 }
 
 .users-list__empty {
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--color-gray-300);
   border-radius: 1rem;
   padding: 2rem;
-  background: #ffffff;
-  color: #64748b;
+  background: var(--color-surface-strong);
+  color: var(--color-text-muted);
   text-align: center;
 }
 

@@ -37,21 +37,21 @@ const emit = defineEmits<{
 }
 
 .base-alert--error {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #991b1b;
+  border-color: var(--color-error-border);
+  background: var(--color-error-light);
+  color: var(--color-error);
 }
 
 .base-alert--success {
-  border-color: #bbf7d0;
-  background: #ecfdf5;
-  color: #047857;
+  border-color: var(--color-success-border);
+  background: var(--color-success-light);
+  color: var(--color-success);
 }
 
 .base-alert--info {
-  border-color: #bfdbfe;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border-color: var(--color-info-border);
+  background: var(--color-info-light);
+  color: var(--color-info);
 }
 
 .base-alert button {

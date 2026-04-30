@@ -8,10 +8,10 @@
 .base-card {
   display: grid;
   gap: 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 0.8rem;
   padding: 1rem;
-  background: #ffffff;
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+  background: var(--color-surface-strong);
+  box-shadow: 0 14px 34px rgba(var(--color-primary-rgb), 0.07);
 }
 </style>

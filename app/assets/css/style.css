@@ -1,0 +1,57 @@
+:root {
+    --font-primary: "Roboto", Arial, sans-serif;
+    --font-display: "Gobold", "Roboto", Arial, sans-serif;
+
+    --color-primary: #334e9d;
+    --color-primary-rgb: 51, 78, 157;
+    --color-primary-light: #5c73b3;
+    --color-primary-lighter: #dce4f6;
+    --color-primary-dark: #263b79;
+    --color-primary-darker: #172449;
+
+    --color-secondary: #73c3b6;
+    --color-secondary-rgb: 115, 195, 182;
+    --color-secondary-light: #94d3ca;
+    --color-secondary-lighter: #e2f4f1;
+    --color-secondary-dark: #4f9e92;
+    --color-secondary-darker: #2d5e57;
+
+    --color-white: #ffffff;
+    --color-black: #111827;
+    --color-gray-50: #f8fafc;
+    --color-gray-100: #f1f5f9;
+    --color-gray-200: #e2e8f0;
+    --color-gray-300: #cbd5e1;
+    --color-gray-500: #64748b;
+    --color-gray-700: #334155;
+    --color-gray-900: #0f172a;
+
+    --color-background: var(--color-white);
+    --color-surface: var(--color-gray-50);
+    --color-surface-strong: var(--color-white);
+    --color-text: var(--color-gray-900);
+    --color-text-muted: var(--color-gray-500);
+    --color-heading: var(--color-primary-darker);
+    --color-border: var(--color-gray-200);
+    --color-link: var(--color-primary);
+    --color-link-hover: var(--color-primary-dark);
+    --color-accent: var(--color-secondary);
+    --color-focus: rgba(var(--color-secondary-rgb), 0.45);
+    --color-error: #b91c1c;
+    --color-error-light: #fef2f2;
+    --color-error-border: #fecaca;
+    --color-success: #047857;
+    --color-success-light: #ecfdf5;
+    --color-success-border: #bbf7d0;
+    --color-warning: #92400e;
+    --color-warning-light: #fef3c7;
+    --color-info: var(--color-primary);
+    --color-info-light: var(--color-primary-lighter);
+    --color-info-border: #bfdbfe;
+}
+
+body {
+    font-family: var(--font-primary);
+    color: var(--color-text);
+    background-color: var(--color-background);
+}

@@ -247,7 +247,7 @@ function closeDomainsModal() {
 }
 
 .tenant-list__desktop-table {
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 14px 34px rgba(var(--color-primary-rgb), 0.07);
 }
 
 .tenant-table__tenant {
@@ -268,7 +268,7 @@ function closeDomainsModal() {
 
 .tenant-domain-card h3 {
   margin: 0 0 0.45rem;
-  color: #0f172a;
+  color: var(--color-heading);
   font-size: 0.98rem;
   overflow-wrap: anywhere;
 }
@@ -284,7 +284,7 @@ function closeDomainsModal() {
 
 .tenant-card h2 {
   margin: 0 0 0.45rem;
-  color: #1d4ed8;
+  color: var(--color-primary);
   font-size: 1.15rem;
 }
 
@@ -300,7 +300,7 @@ function closeDomainsModal() {
 }
 
 .tenant-card dt {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -337,8 +337,8 @@ function closeDomainsModal() {
   border: 0;
   border-radius: 0.55rem;
   padding: 0.45rem 0.7rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 700;
@@ -351,17 +351,17 @@ function closeDomainsModal() {
 }
 
 .tenant-list button.danger {
-  background: #dc2626;
+  background: var(--color-error);
 }
 
 .tenant-list button.danger-soft {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-error-light);
+  color: var(--color-error);
 }
 
 .tenant-list button.tenant-list__secondary-button {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--color-primary-lighter);
+  color: var(--color-primary);
 }
 
 .tenant-list__status,
@@ -377,25 +377,25 @@ function closeDomainsModal() {
 }
 
 .tenant-list__status.is-active {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--color-success-light);
+  color: var(--color-success);
 }
 
 .tenant-list__status.is-inactive {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-error-light);
+  color: var(--color-error);
 }
 
 .tenant-list__primary {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-light);
+  color: var(--color-warning);
 }
 
 .tenant-domains-layout {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   padding: 1rem;
-  background: #ffffff;
+  background: var(--color-surface-strong);
 }
 
 .tenant-domains-layout__toolbar {
@@ -405,19 +405,19 @@ function closeDomainsModal() {
 
 .tenant-list__empty-domains {
   margin: 0;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--color-gray-300);
   border-radius: 0.65rem;
   padding: 1rem;
-  color: #64748b;
+  color: var(--color-text-muted);
   text-align: center;
 }
 
 .tenant-list__empty {
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--color-gray-300);
   border-radius: 1rem;
   padding: 2rem;
-  background: #ffffff;
-  color: #64748b;
+  background: var(--color-surface-strong);
+  color: var(--color-text-muted);
   text-align: center;
 }
 

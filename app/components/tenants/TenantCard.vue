@@ -101,11 +101,11 @@ const emit = defineEmits<{
   position: relative;
   display: grid;
   gap: 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1rem;
-  background: #ffffff;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  background: var(--color-surface-strong);
+  box-shadow: 0 16px 40px rgba(var(--color-primary-rgb), 0.08);
 }
 
 .tenant-card__title {
@@ -121,7 +121,7 @@ const emit = defineEmits<{
 }
 
 .tenant-card h2 {
-  color: #1d4ed8;
+  color: var(--color-primary);
   font-size: 1.2rem;
 }
 
@@ -133,13 +133,13 @@ const emit = defineEmits<{
 }
 
 .tenant-card__status.is-active {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--color-success-light);
+  color: var(--color-success);
 }
 
 .tenant-card__status.is-inactive {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-error-light);
+  color: var(--color-error);
 }
 
 .tenant-card__actions {
@@ -154,8 +154,8 @@ const emit = defineEmits<{
   border: 0;
   border-radius: 0.55rem;
   padding: 0.45rem 0.7rem;
-  background: #1d4ed8;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: 700;
@@ -167,12 +167,12 @@ const emit = defineEmits<{
 }
 
 .tenant-card button.danger {
-  background: #dc2626;
+  background: var(--color-error);
 }
 
 .tenant-card button.danger-soft {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-error-light);
+  color: var(--color-error);
 }
 
 .tenant-card dl {
@@ -187,7 +187,7 @@ const emit = defineEmits<{
 }
 
 .tenant-card dt {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.82rem;
   font-weight: 700;
 }
@@ -224,15 +224,15 @@ const emit = defineEmits<{
   gap: 0.75rem;
   border-radius: 0.75rem;
   padding: 0.7rem;
-  background: #f8fafc;
+  background: var(--color-surface);
 }
 
 .tenant-card__domains strong {
   margin-left: 0.5rem;
   border-radius: 999px;
   padding: 0.2rem 0.5rem;
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-light);
+  color: var(--color-warning);
   font-size: 0.72rem;
 }
 
@@ -244,6 +244,6 @@ const emit = defineEmits<{
 
 .tenant-card__domains p {
   margin: 0;
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
 </style>

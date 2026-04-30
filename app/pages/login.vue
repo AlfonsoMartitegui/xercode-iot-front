@@ -99,21 +99,20 @@ async function handleSubmit() {
   display: grid;
   place-items: center;
   padding: 1.5rem;
-  background:
-    radial-gradient(circle at top, rgba(14, 116, 144, 0.18), transparent 35%),
-    linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
 .login-card {
   width: min(100%, 28rem);
   padding: 2rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.1);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 25px 60px rgba(var(--color-primary-rgb), 0.14);
 }
 
 .login-card h1 {
   margin: 0 0 1.5rem;
+  color: var(--color-heading);
   font-size: 2rem;
 }
 
@@ -129,20 +128,30 @@ async function handleSubmit() {
 
 .login-form input {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.75rem;
   padding: 0.85rem 1rem;
-  background: #ffffff;
+  background: var(--color-white);
+  color: var(--color-text);
+}
+
+.login-form input:focus {
+  outline: 3px solid var(--color-focus);
+  border-color: var(--color-secondary);
 }
 
 .login-form button {
   border: 0;
   border-radius: 0.75rem;
   padding: 0.9rem 1rem;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-white);
   font-weight: 600;
   cursor: pointer;
+}
+
+.login-form button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
 }
 
 .login-form button:disabled {
@@ -152,6 +161,6 @@ async function handleSubmit() {
 
 .login-error {
   margin: 0;
-  color: #b91c1c;
+  color: var(--color-error);
 }
 </style>
