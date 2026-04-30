@@ -1,21 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { changeBeaverPassword, getTenantBeaverRoles, provisionBeaverUser } from '~/services/beaver.service'
+import { getTenantBeaverRoles, provisionBeaverUser } from '~/services/beaver.service'
 import { getTenants } from '~/services/tenants.service'
-import type { BeaverRole, Tenant, User, UserTenantMembership } from '~/services/types'
-import {
-  createUser,
-  createUserTenant,
-  deleteUserTenant,
-  editUser,
-  getUserTenants,
-  getUsers,
-  updateUserTenant,
-} from '~/services/users.service'
+import type { BeaverRole, Tenant, User } from '~/services/types'
+import { createUser, createUserTenant, editUser, getUsers } from '~/services/users.service'
 import type { UserCreateForm } from '~/components/users/UserFormModal.vue'
 import BaseAlert from '~/components/ui/BaseAlert.vue'
 import BaseSpinner from '~/components/ui/BaseSpinner.vue'
-import BeaverPasswordModal from '~/components/users/BeaverPasswordModal.vue'
 import UserFormModal from '~/components/users/UserFormModal.vue'
 import UsersTable from '~/components/users/UsersTable.vue'
 import UsersToolbar from '~/components/users/UsersToolbar.vue'
@@ -62,26 +53,9 @@ const showModal = ref(false)
 const form = ref<UserCreateForm>(initialUserForm())
 const modalLoading = ref(false)
 const modalError = ref('')
-const membershipsByUser = ref<Record<number, UserTenantMembership[]>>({})
-const membershipForms = ref<Record<number, MembershipForm>>({})
-const membershipErrors = ref<Record<number, string>>({})
-const membershipLoading = ref<Record<number, boolean>>({})
-const membershipSavingKey = ref('')
 const beaverRolesByTenant = ref<Record<string, BeaverRole[]>>({})
 const beaverRolesLoadingByTenant = ref<Record<string, boolean>>({})
 const beaverRolesErrorByTenant = ref<Record<string, string>>({})
-const passwordModal = ref({
-  open: false,
-  userId: null as number | null,
-  tenantId: null as number | null,
-  mode: 'change' as 'change' | 'provision',
-})
-const passwordForm = ref({
-  password: '',
-  confirmPassword: '',
-})
-const passwordModalError = ref('')
-const passwordModalLoading = ref(false)
 
 const loggedUserId = computed(() => auth.user.value?.id ?? null)
 const filteredUsers = computed(() => {
@@ -94,11 +68,6 @@ const filteredUsers = computed(() => {
     return selectedTenantIds.value.some((tenantId) => userTenantIds.includes(tenantId))
   })
 })
-const activeUsers = computed(() => users.value.filter((user) => user.is_active).length)
-const superadminUsers = computed(() => users.value.filter((user) => user.is_superadmin).length)
-const totalMemberships = computed(() =>
-  Object.values(membershipsByUser.value).reduce((total, memberships) => total + memberships.length, 0),
-)
 
 const modalMembershipRolesState = computed(() => getBeaverRolesState(form.value.membership.tenant_id))
 
@@ -157,63 +126,9 @@ function getBeaverRolesState(tenantId?: number | string) {
   }
 }
 
-async function loadMembershipsForUsers(userList: User[]) {
-  membershipLoading.value = Object.fromEntries(userList.map((user) => [user.id, true]))
-
-  const entries = await Promise.all(
-    userList.map(async (user) => {
-      try {
-        const memberships = await getUserTenants(user.id)
-        await Promise.all(memberships.map((membership) => ensureBeaverRolesLoaded(membership.tenant_id)))
-        return [user.id, memberships] as const
-      } catch (err) {
-        membershipErrors.value = {
-          ...membershipErrors.value,
-          [user.id]: toMessage(err),
-        }
-        return [user.id, []] as const
-      }
-    }),
-  )
-
-  membershipsByUser.value = Object.fromEntries(entries)
-  membershipLoading.value = Object.fromEntries(userList.map((user) => [user.id, false]))
-}
-
-async function loadUserMemberships(userId: number) {
-  membershipLoading.value = {
-    ...membershipLoading.value,
-    [userId]: true,
-  }
-  membershipErrors.value = {
-    ...membershipErrors.value,
-    [userId]: '',
-  }
-
-  try {
-    const memberships = await getUserTenants(userId)
-    await Promise.all(memberships.map((membership) => ensureBeaverRolesLoaded(membership.tenant_id)))
-    membershipsByUser.value = {
-      ...membershipsByUser.value,
-      [userId]: memberships,
-    }
-  } catch (err) {
-    membershipErrors.value = {
-      ...membershipErrors.value,
-      [userId]: toMessage(err),
-    }
-  } finally {
-    membershipLoading.value = {
-      ...membershipLoading.value,
-      [userId]: false,
-    }
-  }
-}
-
 async function loadUsers() {
   const data = await getUsers()
   users.value = data
-  await loadMembershipsForUsers(data)
   return data
 }
 
@@ -225,7 +140,6 @@ async function loadInitialData() {
     const [userData, tenantData] = await Promise.all([getUsers(), getTenants()])
     users.value = userData
     tenants.value = tenantData
-    await loadMembershipsForUsers(userData)
   } catch (err) {
     error.value = toMessage(err)
   } finally {
@@ -360,184 +274,6 @@ function handleModalTenantChange(tenantId: string) {
   }
 }
 
-function getMembershipForm(userId: number) {
-  return membershipForms.value[userId] || emptyMembershipForm()
-}
-
-function handleMembershipFormChange(userId: number, field: keyof MembershipForm, value: string | boolean) {
-  if (field === 'tenant_id' && value) {
-    ensureBeaverRolesLoaded(String(value))
-  }
-
-  membershipForms.value = {
-    ...membershipForms.value,
-    [userId]: {
-      ...getMembershipForm(userId),
-      [field]: value,
-      ...(field === 'tenant_id' ? { beaver_role_id: '' } : {}),
-    },
-  }
-}
-
-function getMembershipPayload(membership: UserTenantMembership | MembershipForm) {
-  return {
-    role: String(membership.role || '').trim(),
-    beaver_role_id: membership.beaver_role_id || null,
-    is_active: Boolean(membership.is_active),
-  }
-}
-
-async function handleCreateMembership(userId: number) {
-  const membershipForm = getMembershipForm(userId)
-
-  if (!membershipForm.tenant_id || !membershipForm.role.trim()) {
-    membershipErrors.value = {
-      ...membershipErrors.value,
-      [userId]: 'Tenant y rol son obligatorios.',
-    }
-    return
-  }
-
-  membershipSavingKey.value = `${userId}-new`
-  membershipErrors.value = {
-    ...membershipErrors.value,
-    [userId]: '',
-  }
-
-  try {
-    await createUserTenant(userId, {
-      tenant_id: Number(membershipForm.tenant_id),
-      ...getMembershipPayload(membershipForm),
-    })
-    membershipForms.value = {
-      ...membershipForms.value,
-      [userId]: emptyMembershipForm(),
-    }
-    await loadUserMemberships(userId)
-    await loadUsers()
-    notifications.success('Membresia creada correctamente.')
-  } catch (err) {
-    membershipErrors.value = {
-      ...membershipErrors.value,
-      [userId]: toMessage(err),
-    }
-  } finally {
-    membershipSavingKey.value = ''
-  }
-}
-
-function handleMembershipFieldChange(userId: number, tenantId: number, field: keyof UserTenantMembership, value: string | boolean) {
-  membershipsByUser.value = {
-    ...membershipsByUser.value,
-    [userId]: (membershipsByUser.value[userId] || []).map((membership) =>
-      String(membership.tenant_id) === String(tenantId) ? { ...membership, [field]: value } : membership,
-    ),
-  }
-}
-
-async function handleUpdateMembership(userId: number, membership: UserTenantMembership) {
-  if (!String(membership.role || '').trim()) {
-    membershipErrors.value = {
-      ...membershipErrors.value,
-      [userId]: 'El rol HUB es obligatorio.',
-    }
-    return
-  }
-
-  const key = `${userId}-${membership.tenant_id}`
-  membershipSavingKey.value = key
-  membershipErrors.value = {
-    ...membershipErrors.value,
-    [userId]: '',
-  }
-
-  try {
-    await updateUserTenant(userId, membership.tenant_id, getMembershipPayload(membership))
-    await loadUserMemberships(userId)
-    notifications.success('Membresia actualizada correctamente.')
-  } catch (err) {
-    membershipErrors.value = {
-      ...membershipErrors.value,
-      [userId]: toMessage(err),
-    }
-  } finally {
-    membershipSavingKey.value = ''
-  }
-}
-
-async function handleDeleteMembership(userId: number, tenantId: number) {
-  const key = `${userId}-${tenantId}-delete`
-  membershipSavingKey.value = key
-  membershipErrors.value = {
-    ...membershipErrors.value,
-    [userId]: '',
-  }
-
-  try {
-    await deleteUserTenant(userId, tenantId)
-    await loadUserMemberships(userId)
-    await loadUsers()
-    notifications.success('Membresia eliminada correctamente.')
-  } catch (err) {
-    membershipErrors.value = {
-      ...membershipErrors.value,
-      [userId]: toMessage(err),
-    }
-  } finally {
-    membershipSavingKey.value = ''
-  }
-}
-
-function openPasswordModal(userId: number, tenantId: number, mode: 'change' | 'provision') {
-  passwordModal.value = { open: true, userId, tenantId, mode }
-  passwordForm.value = { password: '', confirmPassword: '' }
-  passwordModalError.value = ''
-  passwordModalLoading.value = false
-}
-
-function closePasswordModal() {
-  passwordModal.value = { open: false, userId: null, tenantId: null, mode: 'change' }
-  passwordForm.value = { password: '', confirmPassword: '' }
-  passwordModalError.value = ''
-  passwordModalLoading.value = false
-}
-
-async function handlePasswordModalSubmit() {
-  passwordModalError.value = ''
-
-  if (!passwordForm.value.password || !passwordForm.value.confirmPassword) {
-    passwordModalError.value = 'Debes rellenar ambos campos de contrasena.'
-    return
-  }
-
-  if (passwordForm.value.password !== passwordForm.value.confirmPassword) {
-    passwordModalError.value = 'Las contrasenas no coinciden.'
-    return
-  }
-
-  if (!passwordModal.value.userId || !passwordModal.value.tenantId) {
-    passwordModalError.value = 'Usuario o tenant no seleccionado.'
-    return
-  }
-
-  passwordModalLoading.value = true
-
-  try {
-    if (passwordModal.value.mode === 'provision') {
-      await provisionBeaverUser(passwordModal.value.userId, passwordModal.value.tenantId, passwordForm.value.password)
-      notifications.success('Usuario provisionado en Beaver correctamente.')
-    } else {
-      await changeBeaverPassword(passwordModal.value.userId, passwordModal.value.tenantId, passwordForm.value.password)
-      notifications.success('Beaver password updated successfully.')
-    }
-    closePasswordModal()
-  } catch (err) {
-    passwordModalError.value = toMessage(err)
-  } finally {
-    passwordModalLoading.value = false
-  }
-}
-
 onMounted(loadInitialData)
 </script>
 
@@ -583,25 +319,8 @@ onMounted(loadInitialData)
       :users="filteredUsers"
       :logged-user-id="loggedUserId"
       :modified-users="modifiedUsers"
-      :tenants="tenants"
-      :memberships-by-user="membershipsByUser"
-      :membership-forms="membershipForms"
-      :membership-loading="membershipLoading"
-      :membership-errors="membershipErrors"
-      :membership-saving-key="membershipSavingKey"
-      :roles-by-tenant="beaverRolesByTenant"
-      :roles-loading-by-tenant="beaverRolesLoadingByTenant"
-      :roles-error-by-tenant="beaverRolesErrorByTenant"
       @active-change="handleActiveChange"
       @save="handleSave"
-      @reload-memberships="loadUserMemberships"
-      @update-membership-field="handleMembershipFieldChange"
-      @save-membership="handleUpdateMembership"
-      @delete-membership="handleDeleteMembership"
-      @update-membership-form="handleMembershipFormChange"
-      @create-membership="handleCreateMembership"
-      @password="(userId, tenantId) => openPasswordModal(userId, tenantId, 'change')"
-      @provision="(userId, tenantId) => openPasswordModal(userId, tenantId, 'provision')"
     />
   </ContentLayout>
 
@@ -618,44 +337,4 @@ onMounted(loadInitialData)
     @submit="handleModalSubmit"
     @tenant-change="handleModalTenantChange"
   />
-
-  <BeaverPasswordModal
-    v-if="passwordModal.open"
-    v-model:password="passwordForm.password"
-    v-model:confirm-password="passwordForm.confirmPassword"
-    :mode="passwordModal.mode"
-    :loading="passwordModalLoading"
-    :error="passwordModalError"
-    @close="closePasswordModal"
-    @submit="handlePasswordModalSubmit"
-  />
 </template>
-
-<style scoped>
-.users-summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.users-summary article {
-  display: grid;
-  gap: 0.35rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  background: #ffffff;
-}
-
-.users-summary span {
-  color: #64748b;
-  font-size: 0.82rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.users-summary strong {
-  color: #0f172a;
-  font-size: 1.65rem;
-}
-</style>

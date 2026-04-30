@@ -2,20 +2,12 @@
 import type { BeaverRole, Tenant, User, UserTenantMembership } from '~/services/types'
 import UserMembershipsPanel from '~/components/users/UserMembershipsPanel.vue'
 
-type MembershipForm = {
-  tenant_id: string
-  role: string
-  beaver_role_id: string
-  is_active: boolean
-}
-
 defineProps<{
   user: User
   loggedUserId?: number | null
   modified?: boolean
   tenants: Tenant[]
   memberships: UserTenantMembership[]
-  membershipForm: MembershipForm
   membershipLoading?: boolean
   membershipError?: string
   membershipSavingKey?: string
@@ -27,12 +19,9 @@ defineProps<{
 const emit = defineEmits<{
   activeChange: [userId: number, value: boolean]
   save: [user: User]
-  reloadMemberships: [userId: number]
   updateMembershipField: [userId: number, tenantId: number, field: keyof UserTenantMembership, value: string | boolean]
   saveMembership: [userId: number, membership: UserTenantMembership]
   deleteMembership: [userId: number, tenantId: number]
-  updateMembershipForm: [userId: number, field: keyof MembershipForm, value: string | boolean]
-  createMembership: [userId: number]
   password: [userId: number, tenantId: number]
   provision: [userId: number, tenantId: number]
 }>()
@@ -80,19 +69,15 @@ const emit = defineEmits<{
       :user="user"
       :tenants="tenants"
       :memberships="memberships"
-      :membership-form="membershipForm"
       :loading="membershipLoading"
       :error="membershipError"
       :saving-key="membershipSavingKey"
       :roles-by-tenant="rolesByTenant"
       :roles-loading-by-tenant="rolesLoadingByTenant"
       :roles-error-by-tenant="rolesErrorByTenant"
-      @reload="emit('reloadMemberships', $event)"
       @update-membership-field="(userId, tenantId, field, value) => emit('updateMembershipField', userId, tenantId, field, value)"
       @save-membership="(userId, membership) => emit('saveMembership', userId, membership)"
       @delete-membership="(userId, tenantId) => emit('deleteMembership', userId, tenantId)"
-      @update-form="(userId, field, value) => emit('updateMembershipForm', userId, field, value)"
-      @create-membership="emit('createMembership', $event)"
       @password="(userId, tenantId) => emit('password', userId, tenantId)"
       @provision="(userId, tenantId) => emit('provision', userId, tenantId)"
     />

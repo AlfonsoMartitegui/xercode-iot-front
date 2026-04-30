@@ -99,20 +99,6 @@ function closeDomainsModal() {
               {{ tenant.is_active ? 'Activo' : 'Inactivo' }}
             </span>
           </div>
-
-          <div class="tenant-list__actions">
-            <button type="button" @click="emit('edit', tenant.id)">
-              Editar
-            </button>
-            <button
-              class="danger"
-              type="button"
-              :disabled="deletingTenantId === tenant.id"
-              @click="emit('delete', tenant.id)"
-            >
-              {{ deletingTenantId === tenant.id ? 'Borrando...' : 'Baja' }}
-            </button>
-          </div>
         </div>
 
         <dl>
@@ -149,6 +135,20 @@ function closeDomainsModal() {
             </dd>
           </div>
         </dl>
+
+        <div class="tenant-list__actions tenant-card__actions">
+          <button type="button" @click="emit('edit', tenant.id)">
+            Editar
+          </button>
+          <button
+            class="danger"
+            type="button"
+            :disabled="deletingTenantId === tenant.id"
+            @click="emit('delete', tenant.id)"
+          >
+            {{ deletingTenantId === tenant.id ? 'Borrando...' : 'Baja' }}
+          </button>
+        </div>
       </BaseCard>
     </BaseCardList>
 
@@ -318,6 +318,16 @@ function closeDomainsModal() {
   gap: 0.5rem;
 }
 
+.tenant-card__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: stretch;
+}
+
+.tenant-card__actions button {
+  width: 100%;
+}
+
 .tenant-list button {
   display: inline-flex;
   align-items: center;
@@ -418,6 +428,10 @@ function closeDomainsModal() {
 
   .tenant-list__actions {
     justify-content: flex-start;
+  }
+
+  .tenant-card__actions {
+    justify-content: stretch;
   }
 
   .tenant-domains-table-wrap {

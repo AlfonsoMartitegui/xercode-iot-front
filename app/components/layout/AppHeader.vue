@@ -10,6 +10,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const pageTitle = computed(() => String(route.meta.title || 'Xercode IoT'))
+const pageDescription = computed(() => String(route.meta.description || ''))
 </script>
 
 <template>
@@ -34,7 +35,12 @@ const pageTitle = computed(() => String(route.meta.title || 'Xercode IoT'))
         <span aria-hidden="true" />
       </button>
 
-      <h1>{{ pageTitle }}</h1>
+      <div class="app-header__title">
+        <h1>{{ pageTitle }}</h1>
+        <p v-if="pageDescription">
+          {{ pageDescription }}
+        </p>
+      </div>
     </div>
   </header>
 </template>
@@ -67,6 +73,22 @@ const pageTitle = computed(() => String(route.meta.title || 'Xercode IoT'))
   color: #0f172a;
   font-size: 1.25rem;
   line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-header__title {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.app-header__title p {
+  margin: 0;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 0.88rem;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -117,6 +139,10 @@ const pageTitle = computed(() => String(route.meta.title || 'Xercode IoT'))
 
   .app-header h1 {
     font-size: 1.1rem;
+  }
+
+  .app-header__title p {
+    white-space: normal;
   }
 }
 </style>
