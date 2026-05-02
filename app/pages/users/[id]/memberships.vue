@@ -162,7 +162,7 @@ async function loadMemberships() {
 
 async function loadInitialData() {
   if (!userId.value) {
-    error.value = 'Usuario no valido.'
+    error.value = 'Usuario no válido.'
     return
   }
 
@@ -230,7 +230,7 @@ async function handleCreateMembership(userId: number) {
     membershipForm.value = emptyMembershipForm()
     await loadMemberships()
     showMembershipModal.value = false
-    notifications.success('Membresia creada correctamente.')
+    notifications.success('Membresía creada correctamente.')
   } catch (err) {
     membershipError.value = toMessage(err)
   } finally {
@@ -268,7 +268,7 @@ async function handleUpdateMembership(userId: number, membership: UserTenantMemb
   try {
     await updateUserTenant(userId, membership.tenant_id, getMembershipPayload(membership))
     await loadMemberships()
-    notifications.success('Membresia actualizada correctamente.')
+    notifications.success('Membresía actualizada correctamente.')
   } catch (err) {
     membershipError.value = toMessage(err)
   } finally {
@@ -284,7 +284,7 @@ async function handleDeleteMembership(userId: number, tenantId: number) {
   try {
     await deleteUserTenant(userId, tenantId)
     await loadMemberships()
-    notifications.success('Membresia eliminada correctamente.')
+    notifications.success('Membresía eliminada correctamente.')
   } catch (err) {
     membershipError.value = toMessage(err)
   } finally {
@@ -310,12 +310,12 @@ async function handlePasswordModalSubmit() {
   passwordModalError.value = ''
 
   if (!passwordForm.value.password || !passwordForm.value.confirmPassword) {
-    passwordModalError.value = 'Debes rellenar ambos campos de contrasena.'
+    passwordModalError.value = 'Debes rellenar ambos campos de contraseña.'
     return
   }
 
   if (passwordForm.value.password !== passwordForm.value.confirmPassword) {
-    passwordModalError.value = 'Las contrasenas no coinciden.'
+    passwordModalError.value = 'Las contraseñas no coinciden.'
     return
   }
 
@@ -332,7 +332,7 @@ async function handlePasswordModalSubmit() {
       notifications.success('Usuario provisionado en Beaver correctamente.')
     } else {
       await changeBeaverPassword(passwordModal.value.userId, passwordModal.value.tenantId, passwordForm.value.password)
-      notifications.success('Contrasena Beaver actualizada correctamente.')
+      notifications.success('Contraseña Beaver actualizada correctamente.')
     }
     closePasswordModal()
   } catch (err) {
@@ -359,7 +359,7 @@ watchEffect(() => {
           </NuxtLink>
 
           <button type="button" :disabled="loading" @click="openMembershipModal">
-            Anadir membresia
+            Añadir membresía
           </button>
         </div>
 

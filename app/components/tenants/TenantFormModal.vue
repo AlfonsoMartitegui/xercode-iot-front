@@ -34,12 +34,12 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
       </label>
 
       <label>
-        <span>Codigo</span>
+        <span>Código</span>
         <input :value="modelValue.code" type="text" required @input="updateField('code', ($event.target as HTMLInputElement).value)">
       </label>
 
       <label>
-        <span>Direccion</span>
+        <span>Dirección</span>
         <input :value="modelValue.address" type="text" @input="updateField('address', ($event.target as HTMLInputElement).value)">
       </label>
 
@@ -54,8 +54,8 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
       </label>
 
       <section class="tenant-form__section">
-        <h3>Configuracion Beaver</h3>
-        <p>Datos tecnicos guardados en HUB para preparar la integracion. No ejecuta sincronizacion con Beaver.</p>
+        <h3>Configuración Beaver</h3>
+        <p>Datos técnicos guardados en HUB para preparar la integración. No ejecuta sincronización con Beaver.</p>
 
         <label>
           <span>Usuario admin Beaver</span>
@@ -68,7 +68,7 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
         </label>
 
         <small>
-          {{ isEdit ? 'Dejar vacio para conservar la password actual.' : 'Se guarda cifrada en backend y no se vuelve a mostrar.' }}
+          {{ isEdit ? 'Dejar vacío para conservar la password actual.' : 'Se guarda cifrada en backend y no se vuelve a mostrar.' }}
         </small>
       </section>
 

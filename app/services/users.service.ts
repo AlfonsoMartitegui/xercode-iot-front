@@ -44,7 +44,7 @@ export async function getUserTenants(userId: number) {
   try {
     return await api<UserTenantMembership[]>(`/users/${userId}/tenants`)
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, 'Error al obtener membresias'))
+    throw new Error(getApiErrorMessage(error, 'Error al obtener membresías'))
   }
 }
 
@@ -57,7 +57,7 @@ export async function createUserTenant(userId: number, data: UserTenantPayload) 
       body: data,
     })
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, 'Error al crear membresia'))
+    throw new Error(getApiErrorMessage(error, 'Error al crear membresía'))
   }
 }
 
@@ -70,7 +70,7 @@ export async function updateUserTenant(userId: number, tenantId: number, data: U
       body: data,
     })
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, 'Error al actualizar membresia'))
+    throw new Error(getApiErrorMessage(error, 'Error al actualizar membresía'))
   }
 }
 
@@ -82,6 +82,6 @@ export async function deleteUserTenant(userId: number, tenantId: number) {
       method: 'DELETE',
     })
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, 'Error al eliminar membresia'))
+    throw new Error(getApiErrorMessage(error, 'Error al eliminar membresía'))
   }
 }

@@ -46,7 +46,7 @@ function getRoleValue(role: BeaverRole) {
 </script>
 
 <template>
-  <BaseModal title="Anadir membresia" width="34rem" @close="emit('close')">
+  <BaseModal title="Añadir membresía" width="34rem" @close="emit('close')">
     <form class="membership-form" @submit.prevent="emit('submit')">
       <label>
         <span>Tenant</span>
@@ -59,7 +59,7 @@ function getRoleValue(role: BeaverRole) {
       </label>
 
       <p v-if="tenants.length === 0">
-        No hay tenants disponibles para anadir una nueva membresia.
+        No hay tenants disponibles para añadir una nueva membresía.
       </p>
 
       <label>
@@ -93,7 +93,7 @@ function getRoleValue(role: BeaverRole) {
 
       <label class="membership-form__check">
         <input :checked="modelValue.is_active" type="checkbox" @change="updateField('is_active', ($event.target as HTMLInputElement).checked)">
-        <span>Membresia activa</span>
+        <span>Membresía activa</span>
       </label>
 
       <p v-if="error" class="membership-form__error">
@@ -101,7 +101,7 @@ function getRoleValue(role: BeaverRole) {
       </p>
 
       <button class="membership-form__submit" type="submit" :disabled="loading || tenants.length === 0">
-        {{ loading ? 'Anadiendo...' : 'Anadir membresia' }}
+        {{ loading ? 'Añadiendo...' : 'Añadir membresía' }}
       </button>
     </form>
   </BaseModal>

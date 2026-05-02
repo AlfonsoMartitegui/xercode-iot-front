@@ -30,16 +30,15 @@ const links = [
   >
     <div class="app-sidebar__brand">
       <NuxtLink class="app-sidebar__brand-link" to="/">
-        <strong>Xercode IoT</strong>
-        <span>Admin Hub</span>
+        <img src="/images/xercode_negativo.svg" alt="Xercode" width="330" height="110">
       </NuxtLink>
 
-      <button type="button" aria-label="Cerrar navegacion" @click="emit('close')">
+      <button type="button" aria-label="Cerrar navegación" @click="emit('close')">
         x
       </button>
     </div>
 
-    <nav aria-label="Navegacion privada">
+    <nav aria-label="Navegación privada">
       <NuxtLink
         v-for="link in links"
         :key="link.to"
@@ -52,13 +51,13 @@ const links = [
 
     <div class="app-sidebar__account">
       <div>
-        <span>Area privada</span>
+        <span>Área privada</span>
         <strong v-if="auth.user.value?.username">{{ auth.user.value.username }}</strong>
         <strong v-else>Xercode IoT</strong>
       </div>
 
       <button type="button" @click="auth.signOut()">
-        Cerrar sesion
+        Cerrar sesión
       </button>
     </div>
   </aside>
@@ -83,8 +82,7 @@ const links = [
 }
 
 .app-sidebar__brand-link {
-  display: grid;
-  gap: 0.2rem;
+  display: block;
   min-width: 0;
   color: inherit;
   text-decoration: none;
@@ -94,13 +92,11 @@ const links = [
   color: inherit;
 }
 
-.app-sidebar__brand-link strong {
-  font-size: 1.05rem;
-}
-
-.app-sidebar__brand-link span {
-  color: var(--color-secondary-light);
-  font-size: 0.85rem;
+.app-sidebar__brand-link img {
+  display: block;
+  width: min(10.5rem, 100%);
+  height: auto;
+  /* filter: brightness(0) invert(1); */
 }
 
 .app-sidebar__brand button {

@@ -39,9 +39,9 @@ function closeDomainsModal() {
         <thead>
           <tr>
             <th scope="col">Tenant</th>
-            <th scope="col">Codigo</th>
+            <th scope="col">Código</th>
             <th scope="col">ID</th>
-            <th scope="col">Direccion</th>
+            <th scope="col">Dirección</th>
             <th scope="col">Redirect URL</th>
             <th scope="col">Beaver Base URL</th>
             <th scope="col">Admin Beaver</th>
@@ -103,7 +103,7 @@ function closeDomainsModal() {
 
         <dl>
           <div>
-            <dt>Codigo</dt>
+            <dt>Código</dt>
             <dd>{{ tenant.code }}</dd>
           </div>
           <div>
@@ -111,7 +111,7 @@ function closeDomainsModal() {
             <dd>{{ tenant.id }}</dd>
           </div>
           <div>
-            <dt>Direccion</dt>
+            <dt>Dirección</dt>
             <dd>{{ tenant.address || 'No definida' }}</dd>
           </div>
           <div>
@@ -162,7 +162,7 @@ function closeDomainsModal() {
           <template #toolbar>
             <div class="tenant-domains-layout__toolbar">
               <button type="button" @click="emit('addDomain', selectedTenant.id)">
-                Anadir dominio
+                Añadir dominio
               </button>
             </div>
           </template>

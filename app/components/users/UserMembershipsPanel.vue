@@ -56,7 +56,7 @@ function getRolesError(tenantId?: number | string) {
     </p>
 
     <p v-if="loading && memberships.length === 0" class="memberships__info">
-      Cargando memberships y roles Beaver...
+      Cargando membresías y roles Beaver...
     </p>
 
     <template v-else-if="memberships.length">
@@ -202,7 +202,7 @@ function getRolesError(tenantId?: number | string) {
     </template>
 
     <p v-else class="memberships__empty">
-      Sin membresias explicitas
+      Sin membresías explícitas
     </p>
   </section>
 </template>

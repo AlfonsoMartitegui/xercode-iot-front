@@ -10,7 +10,7 @@ const username = computed(() => auth.user.value?.username || '')
 const dashboardLinks = [
   {
     label: 'Tenants',
-    description: 'Gestiona tenants, dominios y datos de conexion.',
+    description: 'Gestiona tenants, dominios y datos de conexión.',
     to: '/tenants',
   },
   {
@@ -28,11 +28,11 @@ const dashboardLinks = [
         Bienvenido, {{ username }}.
       </h1>
       <h1 v-else>
-        Bienvenido al area privada.
+        Bienvenido al área privada.
       </h1>
     </div>
 
-    <nav class="dashboard-nav" aria-label="Navegacion del dashboard">
+    <nav class="dashboard-nav" aria-label="Navegación del dashboard">
       <NuxtLink
         v-for="link in dashboardLinks"
         :key="link.to"

@@ -48,7 +48,7 @@ async function handleSubmit() {
   } catch (error) {
     errorMessage.value = getApiErrorMessage(
       error,
-      "No se pudo iniciar sesion.",
+      "No se pudo iniciar sesión.",
     );
   } finally {
     submitting.value = false;
@@ -76,7 +76,7 @@ async function handleSubmit() {
         </label>
 
         <label>
-          <span>Contrasena</span>
+          <span>Contraseña</span>
           <input
             v-model="form.password"
             type="password"

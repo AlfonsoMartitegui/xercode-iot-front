@@ -16,7 +16,7 @@ export async function loginRequest(payload: LoginPayload) {
       body: payload,
     })
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, 'Error de autenticacion'))
+    throw new Error(getApiErrorMessage(error, 'Error de autenticación'))
   }
 }
 
@@ -41,7 +41,7 @@ export async function createBeaverHandoffRequest(tenantId?: number | null) {
     })
   } catch (error) {
     throw new Error(
-      getApiErrorMessage(error, 'No se pudo iniciar sesion en Beaver. Contacta con un administrador.'),
+      getApiErrorMessage(error, 'No se pudo iniciar sesión en Beaver. Contacta con un administrador.'),
     )
   }
 }
