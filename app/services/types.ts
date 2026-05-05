@@ -36,6 +36,8 @@ export interface Tenant {
   address?: string | null
   redirect_url?: string | null
   beaver_base_url?: string | null
+  beaver_mqtt_host?: string | null
+  beaver_mqtt_port?: string | null
   beaver_admin_username?: string | null
   beaver_admin_password?: string | null
   is_active?: boolean
@@ -49,6 +51,8 @@ export interface TenantPayload {
   address?: string
   redirect_url?: string
   beaver_base_url?: string
+  beaver_mqtt_host?: string
+  beaver_mqtt_port?: string
   beaver_admin_username?: string
   beaver_admin_password?: string
   is_active: boolean

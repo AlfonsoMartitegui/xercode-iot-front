@@ -44,6 +44,8 @@ function closeDomainsModal() {
             <th scope="col">Dirección</th>
             <th scope="col">Redirect URL</th>
             <th scope="col">Beaver Base URL</th>
+            <th scope="col">MQTT Host</th>
+            <th scope="col">MQTT Port</th>
             <th scope="col">Admin Beaver</th>
             <th scope="col">Dominios</th>
             <th class="is-actions-cell" scope="col">Acciones</th>
@@ -65,6 +67,8 @@ function closeDomainsModal() {
             <td>{{ tenant.address || 'No definida' }}</td>
             <td>{{ tenant.redirect_url || 'No definida' }}</td>
             <td>{{ tenant.beaver_base_url || 'No definida' }}</td>
+            <td>{{ tenant.beaver_mqtt_host || 'No definido' }}</td>
+            <td>{{ tenant.beaver_mqtt_port || 'No definido' }}</td>
             <td>{{ tenant.beaver_admin_username || 'No definido' }}</td>
             <td>
               <button class="tenant-list__secondary-button" type="button" @click="openDomainsModal(tenant.id)">
@@ -121,6 +125,14 @@ function closeDomainsModal() {
           <div>
             <dt>Beaver Base URL</dt>
             <dd>{{ tenant.beaver_base_url || 'No definida' }}</dd>
+          </div>
+          <div>
+            <dt>MQTT Host</dt>
+            <dd>{{ tenant.beaver_mqtt_host || 'No definido' }}</dd>
+          </div>
+          <div>
+            <dt>MQTT Port</dt>
+            <dd>{{ tenant.beaver_mqtt_port || 'No definido' }}</dd>
           </div>
           <div>
             <dt>Admin Beaver</dt>

@@ -58,6 +58,16 @@ function updateField<Key extends keyof TenantPayload>(field: Key, value: TenantP
         <p>Datos técnicos guardados en HUB para preparar la integración. No ejecuta sincronización con Beaver.</p>
 
         <label>
+          <span>MQTT Host Beaver</span>
+          <input :value="modelValue.beaver_mqtt_host" type="text" autocomplete="off" @input="updateField('beaver_mqtt_host', ($event.target as HTMLInputElement).value)">
+        </label>
+
+        <label>
+          <span>MQTT Port Beaver</span>
+          <input :value="modelValue.beaver_mqtt_port" type="text" autocomplete="off" @input="updateField('beaver_mqtt_port', ($event.target as HTMLInputElement).value)">
+        </label>
+
+        <label>
           <span>Usuario admin Beaver</span>
           <input :value="modelValue.beaver_admin_username" type="text" autocomplete="off" @input="updateField('beaver_admin_username', ($event.target as HTMLInputElement).value)">
         </label>
