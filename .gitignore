@@ -22,3 +22,11 @@ logs
 .env
 .env.*
 !.env.example
+
+# Documentation build artifacts
+docs/build/build-unificado.md
+docs/build/diagram-*.mmd
+docs/exports/*.docx
+docs/exports/*.pdf
+docs/generated/diagrams/*.svg
+docs/generated/diagrams/*.png
