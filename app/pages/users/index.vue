@@ -3,9 +3,10 @@ import { computed, onMounted, ref } from 'vue'
 import { getTenantBeaverRoles, provisionBeaverUser } from '~/services/beaver.service'
 import { getTenants } from '~/services/tenants.service'
 import type { BeaverRole, Tenant, User } from '~/services/types'
-import { createUser, createUserTenant, editUser, getUsers } from '~/services/users.service'
+import { createUser, createUserTenant, deleteUser, editUser, getUsers } from '~/services/users.service'
 import type { UserCreateForm } from '~/components/users/UserFormModal.vue'
 import BaseAlert from '~/components/ui/BaseAlert.vue'
+import BaseModal from '~/components/ui/BaseModal.vue'
 import BaseSpinner from '~/components/ui/BaseSpinner.vue'
 import UserFormModal from '~/components/users/UserFormModal.vue'
 import UsersTable from '~/components/users/UsersTable.vue'
@@ -53,6 +54,9 @@ const showModal = ref(false)
 const form = ref<UserCreateForm>(initialUserForm())
 const modalLoading = ref(false)
 const modalError = ref('')
+const deleteUserTarget = ref<User | null>(null)
+const deleteLoading = ref(false)
+const deleteError = ref('')
 const beaverRolesByTenant = ref<Record<string, BeaverRole[]>>({})
 const beaverRolesLoadingByTenant = ref<Record<string, boolean>>({})
 const beaverRolesErrorByTenant = ref<Record<string, string>>({})
@@ -176,6 +180,51 @@ async function handleSave(user: User) {
     notifications.success('Usuario actualizado correctamente.')
   } catch (err) {
     error.value = toMessage(err)
+  }
+}
+
+function openDeleteModal(user: User) {
+  if (user.is_superadmin) {
+    notifications.error('No se puede eliminar un superadmin.')
+    return
+  }
+
+  deleteUserTarget.value = user
+  deleteError.value = ''
+  deleteLoading.value = false
+}
+
+function closeDeleteModal() {
+  deleteUserTarget.value = null
+  deleteError.value = ''
+  deleteLoading.value = false
+}
+
+async function handleDeleteUser() {
+  const user = deleteUserTarget.value
+  deleteError.value = ''
+
+  if (!user) {
+    deleteError.value = 'Usuario no seleccionado.'
+    return
+  }
+
+  if (user.is_superadmin) {
+    deleteError.value = 'No se puede eliminar un superadmin.'
+    return
+  }
+
+  deleteLoading.value = true
+
+  try {
+    await deleteUser(user.id)
+    closeDeleteModal()
+    await loadUsers()
+    notifications.success('Usuario eliminado correctamente.')
+  } catch (err) {
+    deleteError.value = toMessage(err)
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -321,6 +370,7 @@ onMounted(loadInitialData)
       :modified-users="modifiedUsers"
       @active-change="handleActiveChange"
       @save="handleSave"
+      @delete="openDeleteModal"
     />
   </ContentLayout>
 
@@ -337,4 +387,71 @@ onMounted(loadInitialData)
     @submit="handleModalSubmit"
     @tenant-change="handleModalTenantChange"
   />
+
+  <BaseModal
+    v-if="deleteUserTarget"
+    title="Borrar usuario"
+    width="32rem"
+    :z-index="50"
+    @close="closeDeleteModal"
+  >
+    <div class="user-delete-modal">
+      <p>
+        Vas a borrar el usuario "{{ deleteUserTarget.username }}" y todas sus relaciones con tenants. Esta acción no se puede deshacer.
+      </p>
+
+      <BaseAlert v-if="deleteError" type="error">
+        {{ deleteError }}
+      </BaseAlert>
+
+      <div class="user-delete-modal__actions">
+        <button type="button" :disabled="deleteLoading" @click="closeDeleteModal">
+          Cancelar
+        </button>
+        <button class="is-danger" type="button" :disabled="deleteLoading" @click="handleDeleteUser">
+          {{ deleteLoading ? 'Borrando...' : 'Borrar usuario' }}
+        </button>
+      </div>
+    </div>
+  </BaseModal>
 </template>
+
+<style scoped>
+.user-delete-modal {
+  display: grid;
+  gap: 1rem;
+}
+
+.user-delete-modal p {
+  margin: 0;
+  color: var(--color-gray-700);
+  line-height: 1.5;
+}
+
+.user-delete-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.user-delete-modal__actions button {
+  border: 0;
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  background: var(--color-gray-200);
+  color: var(--color-gray-700);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.user-delete-modal__actions button.is-danger {
+  background: var(--color-warning);
+  color: var(--color-white);
+}
+
+.user-delete-modal__actions button:disabled {
+  background: var(--color-gray-300);
+  color: var(--color-gray-700);
+  cursor: not-allowed;
+}
+</style>

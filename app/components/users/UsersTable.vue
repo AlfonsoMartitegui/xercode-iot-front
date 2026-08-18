@@ -13,6 +13,7 @@ defineProps<{
 const emit = defineEmits<{
   activeChange: [userId: number, value: boolean]
   save: [user: User]
+  delete: [user: User]
 }>()
 </script>
 
@@ -73,6 +74,15 @@ const emit = defineEmits<{
               <button v-else class="users-list__noop-button" type="button" disabled>
                 Sin cambios
               </button>
+              <button
+                v-if="!user.is_superadmin"
+                class="users-list__danger-button"
+                type="button"
+                :disabled="user.id === loggedUserId"
+                @click="emit('delete', user)"
+              >
+                Borrar
+              </button>
             </div>
           </td>
         </tr>
@@ -131,6 +141,15 @@ const emit = defineEmits<{
           <button v-else class="users-list__noop-button" type="button" disabled>
             Sin cambios
           </button>
+          <button
+            v-if="!user.is_superadmin"
+            class="users-list__danger-button"
+            type="button"
+            :disabled="user.id === loggedUserId"
+            @click="emit('delete', user)"
+          >
+            Borrar
+          </button>
         </div>
       </BaseCard>
     </BaseCardList>
@@ -183,6 +202,7 @@ const emit = defineEmits<{
 
 .users-list__actions {
   display: flex;
+  gap: 0.5rem;
   justify-content: flex-end;
 }
 
@@ -202,6 +222,11 @@ const emit = defineEmits<{
   background: var(--color-gray-200);
   color: var(--color-text-muted);
   cursor: not-allowed;
+}
+
+.users-list button.users-list__danger-button,
+.user-card button.users-list__danger-button {
+  background: var(--color-warning);
 }
 
 .users-list button:disabled,

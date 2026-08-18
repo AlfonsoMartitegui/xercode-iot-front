@@ -38,6 +38,18 @@ export async function editUser(userId: number, data: UserPayload) {
   }
 }
 
+export async function deleteUser(userId: number) {
+  const api = useApi()
+
+  try {
+    return await api<unknown>(`/auth/user/${userId}`, {
+      method: 'DELETE',
+    })
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Error al eliminar usuario'))
+  }
+}
+
 export async function getUserTenants(userId: number) {
   const api = useApi()
 
